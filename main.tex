@@ -1,21 +1,26 @@
-\documentclass{report}[a4paper]
+\documentclass[11pt,a4paper]{report}
+\usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage[OT1]{fontenc}
+\usepackage{kpfonts} % Font
+\usepackage[activate]{pdfcprot}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[amsmath,thmmarks]{ntheorem}
+\usepackage{mathtools}
+
 \usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{hyperref}
+\usepackage{varioref}
+\usepackage[linkcolor=black,colorlinks=true,citecolor=black,filecolor=black,bookmarks=true]{hyperref}
 
-\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
-\renewcommand{\vec}[1]{\boldsymbol{#1}}
-\newcommand{\cov}{\textsc{Cov}}
-\newcommand{\var}{\textsc{Var}}
+\input{theoremsetup}
+\input{macrosetup}
 
-\newtheorem*{theorem}{Theorem}
-
-\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
-\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
-
-\title{ETH IntroML Summary}
+\title{ETH IntroML Lecture Notes}
 \author{Michael Aerni \\ aernim@student.ethz.ch}
 \date{September 2019}
 
