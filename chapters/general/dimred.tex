@@ -1,0 +1,26 @@
+\section{Dimensionality Reduction}
+The basic challenge is:
+Given a data set
+$D = \{\vec{x}_1, \dotsc, \vec{x}_n\} \in \mathbb{R}^d$,
+find an \emph{embedding}
+$\vec{z}_1, \dotsc, \vec{z}_n \in \mathbb{R}^k$
+with $k < d$.
+
+The embedding may then be used for visualisation,
+regularisation (model selection),
+unsupervised feature discovery,
+and more.
+
+Typically, a mapping $f : \mathbb{R}^d \to \mathbb{R}^k$
+with $k \ll d$ is obtained.
+
+In \emph{linear dimensionality reduction},
+the mapping is of the form
+$f(\vec{x}) = \vec{A}\vec{x}, \vec{A} \in \mathbb{R}^{k \times d}$.
+In \emph{nonlinear dimensionality reduction},
+other mappings (parametric or non-parametric) are used.
+
+Linear dimensionality reduction can be interpreted as a form of
+compression.
+It should be possible to accurately reconstruct the original data
+from the embedding.

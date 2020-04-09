@@ -1,0 +1,249 @@
+\section{SVM}
+Support vector machines perform maximum margin linear classification.
+Intuitively, this means to maximise the distance between the decision
+boundary and both classes.
+Formally, the margin is the euclidian distance
+between two hyperplanes parallel to the decision boundary.
+
+The points which defined the distance from the decision
+boundary are called the support vectors.
+
+
+\subsection{General SVMs}
+
+SVM uses the Hinge loss which is defined as follows:
+\begin{equation*}
+    \ell_H(\vec{w}; \vec{x}, y) =
+    \max(0, 1 - y \vec{w}^T \vec{x})
+\end{equation*}
+It only becomes zero if a sample is classified correctly
+with a certain "confidence".
+The Hinge loss is a convex upper-bound on the
+zero-one loss.
+
+The constant $1$ is used in the Hinge loss to ensure
+that weights do not explode.
+Any other constant can be compensated by simply
+scaling the weights accordingly.
+
+The complete SVM objective is
+\begin{equation*}
+    \hat{\vec{w}} = \arg\min_{\vec{w}} \frac{1}{n}
+    \sum_{i=1}^n \max\{0, 1 - y_i \vec{w}^T \vec{x}_i\}
+    + \lambda \norm{\vec{w}}_2^2
+\end{equation*}
+Both the Hinge loss and the regularisation term are required for
+the SVM to work.
+Furthermore, features have to be standardised.
+TODO: Do features really have to be standardised?
+
+The gradient of the Hinge loss is
+\begin{equation*}
+    \nabla_{\vec{w}} \ell_H(\vec{w}; \vec{x}, y) =
+    \begin{cases}
+        0 & \text{if $\vec{w}^T \vec{x}_i y_i \geq 1$} \\
+        -y_i \vec{x}_i & \text{if $\vec{w}^T \vec{x}_i y_i < 1$}
+    \end{cases}
+\end{equation*}
+
+Thus, the gradient of the empirical risk for SVMs is
+\begin{equation*}
+    \nabla_{\vec{w}} \hat{R}(\vec{w})
+    = - \frac{1}{n} \sum_{i : \vec{w}^T \vec{x}_i y_i < 1}{
+        y_i \vec{x}_i
+    }
+    + 2 \vec{w}
+\end{equation*}
+
+If the data is linearly separable, SVM finds the
+maximum margin decision boundary.
+
+A safe learning rate choice is $\eta_t = \frac{1}{\lambda t}$, i.e. use learning rate decay
+based on the regularisation parameter $\lambda$.
+
+
+\subsection{$L_1$-SVM}
+In $L_1$-SVM, the penalty term is replaced with a $L_1$ loss,
+thus the objective becomes
+\begin{equation*}
+    \hat{\vec{w}} = \arg\min_{\vec{w}} \frac{1}{n}
+    \sum_{i=1}^n \max\{0, 1 - y_i \vec{w}^T \vec{x}_i\}
+    + \lambda \norm{\vec{w}}_1
+\end{equation*}
+
+The alternative penalty term encourages coefficients to be
+exactly zero and thus results in automatic feature selection.
+
+
+\subsection{Geometric Interpretation}
+TODO: Honestly, just read tutorial 4.
+
+A \emph{hyperplane} in $\mathbb{R}^d$ is the
+set of vectors fulfilling
+$\langle \vec{w}, \vec{x} \rangle = 0$.
+It is a $d-1$ dimensional subspace.
+For $b \in \mathbb{R}$, the set
+$\{\vec{x} \in \mathbb{R}^d \mid \langle \vec{w}, \vec{x} \rangle = b\}$
+is a \emph{translated/affine hyperplane}.
+Increasing $b$ moves the hyperplane towards
+the direction of $\vec{w}$ and vice versa.
+
+The \emph{orthogonal projection} of $\vec{z}$
+onto a hyperplane is given by $\hat{\vec{z}} = \vec{z} + t \vec{w}$
+where $t = \frac{b - \langle \vec{w}, \vec{z} \rangle}{\norm{\vec{w}}^2}$.
+
+The \emph{orthogonal distance} of $\vec{z}$ to a
+hyperplane $H = \{\vec{x} \in \mathbb{R}^d \mid \langle \vec{w}, \vec{x} \rangle = 0\}$
+is given by
+\begin{equation*}
+    \frac{| \langle \vec{w}, \vec{z} \rangle |}{\norm{\vec{w}}^2}
+\end{equation*}
+If $\vec{w}$ is a unit vector, the distance is directly
+given by $|\langle \vec{w}, \vec{z} \rangle|$.
+
+From now on, $\vec{z}$ contains an additional entry
+$1$ and $\vec{w}$ contains an additional entry $-b$.
+Therefore, all hyperplanes are through the origin.
+
+Let $D$ be a data set and $H$ a hyperplane.
+The \emph{margin} of $H$ w.r.t. $D$ is
+\begin{equation*}
+    \gamma_D(\vec{w}) := \min_{(\vec{x}, y) \in D}{
+        \frac{|\langle \vec{w}, \vec{x} \rangle |}{\norm{\vec{w}}}
+    }
+\end{equation*}
+
+We now assume that
+\begin{enumerate}
+    \item The data is linearly separable.
+    \item There exists a separating hyperplane with non-zero margin.
+\end{enumerate}
+
+The \emph{Hard-SVM} problem requires both assumptions.
+It is minimising
+\begin{equation*}
+    \frac{1}{2} \norm{\vec{w}}^2
+\end{equation*}
+such that
+\begin{equation*}
+    y_i \cdot \langle \vec{w}, \vec{x}_i \rangle
+    \geq 1 \text{ for all $i \in \{1, \dotsc, n\}$}
+\end{equation*}
+
+The separating hyperplane assumption can be
+dropped by introducing \emph{slack variables}
+$\xi_1, \dotsc, \xi_n \geq 0$
+which allow to violate some constraints.
+$\xi_i$ denotes the amount the
+$i$-th constraint is violated.
+
+This leads to the \emph{Soft-SVM} problem.
+It is minimising
+\begin{equation*}
+    \frac{1}{2} \norm{\vec{w}}^2 + C \sum_{i=1}^n{\xi_i}
+\end{equation*}
+such that
+\begin{align*}
+    y_i \cdot \langle \vec{w}, \vec{x}_i \rangle
+        &\geq 1 - \xi_i & \text{ for all $i \in \{1, \dotsc, n\}$} \\
+    \xi_i &\geq 0 & \text{ for all $i \in \{1, \dotsc, n\}$}
+\end{align*}
+where $C > 0$ denotes the softness of the problem.
+
+If $C = 0$ then $\vec{w} = \vec{0}$ is a trivial
+solution; if $C \to \infty$ then the problem
+becomes similar to the Hard-SVM problem.
+
+Fixing $\vec{w}$ and optimising $\xi_i$
+leads to the solution
+\begin{equation*}
+    \xi_i^*(\vec{w}) = \ell_H(y_i \cdot \langle \vec{w}, \vec{x}_i \rangle)
+\end{equation*}
+and by plugging it in to the equivalent
+optimisation objective
+\begin{equation*}
+    \arg\min_{\vec{w}}{
+        \frac{1}{2} \norm{\vec{w}}^2
+        + C \sum_{i=1}^n{\ell_H(y_i \cdot \langle \vec{w}, \vec{x}_i \rangle)}
+    }
+\end{equation*}
+
+
+\subsection{Kernelised SVM}
+The reformulisation of the SVM loss (without regulariser)
+with respect to inner products and kernels
+for sample $i$ is
+\begin{equation*}
+    \max\{0, 1 - y_i \sum_{j=1}^n{\alpha_j y_j k(\vec{x}_j, \vec{x}_i)}\}
+\end{equation*}
+and for the regulariser
+\begin{equation*}
+    \lambda \sum_{i=1}^n\sum_{j=1}^n{
+        \alpha_i \alpha_j y_i y_j k(\vec{x}_i, \vec{x}_j)
+    }
+    = \lambda \vec{\alpha}^T \vec{D}_y \vec{K} \vec{D}_y \vec{\alpha}
+\end{equation*}
+where $\vec{K}$ is the Gram matrix and
+$\vec{D}_y$ contains the $y_i$ on its diagonal.
+
+This leads to the new objective
+\begin{equation*}
+    \hat{\vec{\alpha}} = \arg\min_{\vec{\alpha}}{
+        \frac{1}{n} \sum_{i=1}^n{
+            \max\{0, 1 - y_i \vec{\alpha}^T \vec{k}_i\} +
+            \lambda \vec{\alpha}^T \vec{D}_y \vec{K} \vec{D}_y \vec{\alpha}
+        }
+    }
+\end{equation*}
+where $\vec{k}_i = [y_1 k(\vec{x}_i, \vec{x}_1), \dotsc, y_n k(\vec{x}_i, \vec{x}_n)]$.
+
+Prediction for a data point $\vec{x}$ is done as
+\begin{equation*}
+    \hat{y} = sign\left(
+        \sum_{i=1}^n{\alpha_i y_i k(\vec{x}_i, \vec{x})}
+    \right)
+\end{equation*}
+
+
+\subsection{Multi-Class SVM}
+SVMs can be generalised to a multi-class scenario.
+The key idea is to maintain $c$ weight vectors
+$\vec{w}^{(i)}$, one for each class.
+The prediction is then
+\begin{equation*}
+    \hat{y} = \arg\max_i{\vec{w}^{(i)^T} \vec{x}}
+\end{equation*}
+
+For each data point, it should hold that the prediction
+for the true class is separated by a margin from the
+class which has the second highest prediction, i.e.
+\begin{equation*}
+    \vec{w}^{(y)^T} \vec{x} \geq
+    \max_{i \neq y}{\vec{w}^{(i)^T}\vec{x}} + 1
+\end{equation*}
+
+The multi-class Hinge loss is given as
+\begin{equation*}
+    \ell_{MC-H}(\vec{w}^{(1)}, \dotsc, \vec{w}^{(c)}; \vec{x}, y)
+    = \max{\{0, 1 +
+            \max_{j \neq y}
+            {\vec{w}^{(j)^T}\vec{x} - \vec{w}^{(y)^T}\vec{x}}
+    \}}
+\end{equation*}
+
+The gradient is
+\begin{equation*}
+    \nabla_{\vec{w}^{(i)}} \ell_{MC-H}(\vec{w}^{(1:c)}; \vec{x}, y) =
+    \begin{cases}
+        0 & \text{if $\vec{w}^{(y)^T} \vec{x} \geq \max_{i \neq y}{\vec{w}^{(i)^T}\vec{x}} + 1$ or $i \neq y$ and $i \notin \arg\max_j{\vec{w}^{(j)^T} \vec{x}}$} \\
+        -x & \text{if $\vec{w}^{(y)^T} \vec{x} < \max_{i \neq y}{\vec{w}^{(i)^T}\vec{x}} + 1$ and $i = y$} \\
+        +x & \text{otherwise}
+    \end{cases}
+\end{equation*}
+i.e. zero if either the classification is correct or the
+weight does neither correspond to the class nor to the
+maximal prediction for the sample;
+minus $x$ if the weight corresponds to the class and does
+not classify correctly;
+plus $x$ if the weight does not correspond to the class
+but is the maximum prediction.

@@ -1,0 +1,146 @@
+\section{Model Selection}
+Underfitting happens if the model is too
+simple, overfitting if the model is too complex.
+
+As the model complexity increases,
+the training error usually decreases.
+However, the prediction error usually
+decreases up to a point, and then starts
+increasing again.
+
+
+\subsection{Risks}
+We usually assume that the data set is generated
+independently and identically distributed (i.i.d.)
+from some unknown distribution $P$,
+$(\vec{x}_i, y_i) \sim P(\vec{X}, Y)$.
+The i.i.d. assumption can be invalid, e.g. if
+\begin{itemize}
+    \item Time series data
+    \item Spatially correlated data
+    \item Correlated noise
+\end{itemize}
+The goal is then to minimise the expected error
+(true risk) under $P$.
+The empirical risk is used to estimate the true risk.
+
+In the following, $\ell(y, \hat{y})$ is a loss function
+and $\hat{y} = f(\vec{x}; \theta)$ is a prediction.
+
+The population risk/true risk/expected error under $P$ is
+\begin{equation*}
+    R(\vec{w})
+    = \int{P(\vec{x}, y)\ell(y, \hat{y}) d\vec{x} dy}
+    = \mathbb{E}_{\vec{x}, y}[\ell(y, \hat{y})]
+\end{equation*}
+
+The true risk on a sample data set $D$ is
+\begin{equation*}
+    \hat{R}_D(\vec{w}) = \frac{1}{|D|}
+        \sum_{(\vec{x}, y) \in D}{\ell(y, \hat{y})}
+\end{equation*}
+
+Under the i.i.d. assumption,
+according to the law of large numbers,
+$\hat{R}_D(\vec{w}) \to R(\vec{w})$
+for any fixed $\vec{w}$ as $|D| \to \infty$.
+
+Empirical risk minimisation on training data $D$ is
+finding
+$\hat{\vec{w}}_D = \arg\min_{\vec{w}}{\hat{R}_D(\vec{w})}$.
+Ideally, we want to solve
+$\vec{w}^* = \arg\min_{\vec{w}}{R(\vec{w})}$.
+Generalisation refers to a model which extracts
+all relevant information from the training data
+but also performs well on unseen data.
+TODO: What is the generalisation error? Is it $R(\hat{\vec{w}}_D)$?
+
+For learning via empirical risk minimisation,
+uniform convergence is needed:
+\begin{equation*}
+    \sup_{\vec{w}}{|R(\vec{w}) - \hat{R}(\vec{w})|} \to 0
+    \text{ as $|D| \to \infty$}
+\end{equation*}
+This is not implied by the law of large numbers
+and depends on the model class.
+For example, if "bad" points converge slower than
+"good" points, the generalisation error might increase
+with increasing amounts of data.
+
+In general, it holds that
+\begin{equation*}
+    \mathbb{E}_D[\hat{R}_D(\hat{\vec{w}}_D)] \leq
+    \mathbb{E}_D[R(\hat{\vec{w}}_D)]
+\end{equation*}
+Thus, when evaluating performance on the training data,
+an overly optimistic estimate is achieved.
+
+The general idea is thus to use two independent data sets
+$D_{train} \sim P$ and $D_{test} \sim P$.
+Optimisation happens on the training set, i.e.
+\begin{equation*}
+    \hat{\vec{w}} = \arg\min_{\vec{w}}{\hat{R}_{train}(\vec{w})}
+\end{equation*}
+and evaluation on the test set
+\begin{equation*}
+    \hat{R}_{test}(\hat{\vec{w}}) = \frac{1}{|D_{test}|}
+    \sum_{(\vec{x}, y) \in D_{test}}{
+        (y - \hat{\vec{w}}^T \vec{x})^2
+    }
+\end{equation*}
+Then,
+\begin{equation*}
+    \mathbb{E}_{D_{train}, D_{test}}[\hat{R}_{test}(\hat{\vec{w}}_{D_{train}})] =
+    \mathbb{E}_{D_{train}}[R(\hat{\vec{w}}_{D_{train}})]
+\end{equation*}
+
+The test error itself is random.
+The variance increases for more complex models.
+Thus, using a single test set creates bias.
+
+
+\subsection{Cross-Validation}
+Using multiple test sets wastes data.
+Thus, for each candidate model $m$
+and $i = 1, \dotsc, k$:
+\begin{enumerate}
+    \item Split $D = D_{train}^{(i)} \uplus D_{val}^{(i)}$
+    \item Train model:
+    $\hat{\vec{w}}_{i,m} = \arg\min_{\vec{w}}{\hat{R}_{train}^{(i)}(\vec{w})}$
+    \item Estimate error:
+    $\hat{R}_{m}^{(i)} = \hat{R}_{val}^{(i)}(\hat{\vec{w}}_{i, m})$
+\end{enumerate}
+The model can then be selected as
+\begin{equation*}
+    \hat{m} = \arg\min_m{\frac{1}{k}
+        \sum_{i=1}^k{\hat{R}_m^{(i)}}
+    }
+\end{equation*}
+
+Monte Carlo cross-validation picks a training set of
+given size uniformly at random and validates on the
+remaining points.
+The prediction error is then estimated over multiple
+random trials.
+
+$k$-fold cross-validation partitions the training set
+into $k$ folds.
+$k - 1$ are used for training, $1$ for validation.
+The prediction error is then estimated as the mean
+validation error while varying the validation folds.
+$k = 1$ is called leave-one-out cross-validation (LOOCV).
+
+For large enough $k$, the cross-validation error estimate
+is very nearly unbiased.
+
+If $k$ is picked too small, there is little data for
+training and a risk to underfit the training set and
+overfit the test set.
+If $k$ is picked too large, performance is usually better
+but the computational complexity increases.
+In practice, $k = 5$ or $k = 10$ often works well.
+
+However, the error on the validation set will usually
+also be underestimated.
+If a model is selected, it is usually retrained with
+the full data set.

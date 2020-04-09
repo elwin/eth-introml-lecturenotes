@@ -1,0 +1,13 @@
+\section{Optimisation}
+A function $f: \mathbb{R}^d \to \mathbb{R}$ is
+convex if and only if for all
+$\vec{x}, \vec{x}' \in \mathbb{R}^d, \lambda \in [0, 1]$ it
+holds that
+\begin{equation*}
+    f(\lambda \vec{x} + (1- \lambda) \vec{x}')
+    \leq
+    \lambda f(\vec{x}) + (1 - \lambda) \vec{x}'
+\end{equation*}
+Equivalently, the first derivative of $f$
+has to be monotonically increasing and the
+second derivative has to be non-negative.

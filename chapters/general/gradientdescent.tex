@@ -1,0 +1,64 @@
+\section{Gradient Descent}
+Let $\vec{w}_0 \in \mathbb{R}^d$ be an arbitrary
+starting point,
+$\eta_t$ the learning rate at time $t$ and
+$\hat{R}(\vec{w})$ be a differentiable function
+which should be minimised.
+For $t = 1, 2, \dotsc$ gradient descent calculates
+\begin{equation*}
+    \vec{w}_{t + 1} = \vec{w}_t - \eta_t
+    \nabla \hat{R}(\vec{w}_t)
+\end{equation*}
+
+Under mild assumptions, if the step size is sufficiently
+small, gradient descent converges to a stationary
+point.
+Thus, for convex objectives, it finds the optimal solution (if one exists).
+
+If the step size is chosen too small, convergence may
+take very long.
+If the step size is too large, the objective might
+oscillate or even diverge.
+The step size can also be chosen adaptively.
+
+The line search heuristic works as follows:
+Let $g_t = \nabla \hat{R}(\vec{w}_t)$.
+Pick $\eta_t \in \arg\min_{\eta \in (0, \infty)}(
+    \hat{R}(\vec{w}_t - \eta \cdot g_t)
+)$,
+i.e. the step size which minimises the objective
+w.r.t. the current gradient.
+
+The bold driver heuristic works as follows:
+\begin{itemize}
+    \item If the function decreases, increase the step size:
+    \begin{equation*}
+        \hat{R}(\underbrace{\vec{w}_t - \eta_t g_t}_{\vec{w}_{t+1}}) < \hat{R}(\vec{w}_t)
+        \Rightarrow \eta_{t + 1} = \eta_t \cdot c_{acc}
+    \end{equation*}
+    \item If the function increases, decrease the step size:
+    \begin{equation*}
+        \hat{R}(\vec{w}_t - \eta_t g_t) > \hat{R}(\vec{w}_t)
+        \Rightarrow \eta_{t + 1} = \eta_t \cdot c_{dec}
+    \end{equation*}
+\end{itemize}
+
+Stochastic gradient descent uses only a single
+sample per iteration.
+The sample is picked uniform at random
+(with replacement) from the dataset,
+used to compute the gradient and to update the
+weights.
+
+Stochastic gradient descent is guaranteed to
+converge under mild assumptions if
+$\sum_t{\eta_t} = \infty$ and
+$\sum_t{\eta_t^2} < \infty$.
+
+Using only a single sample at a time is computationally inefficient
+and might have large variance in the gradient estimate.
+It might thus lead to slow convergence.
+
+Using mini-batch SGD reduces variance.
+It uses mini-batches and averages the gradients with respect to
+multiple randomly selected points.

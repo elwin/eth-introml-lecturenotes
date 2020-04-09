@@ -1,0 +1,399 @@
+\section{PCA}
+Let
+$D = \{\vec{x}_1, \dotsc, \vec{x}_n\}, \vec{x}_i \in \mathbb{R}^d$
+be a data set with zero mean,
+i.e. $\vec{\mu} = \frac{1}{n} \sum_{i=1}^n{\vec{x}_i} = \vec{0}$.
+
+The \emph{PCA problem} for $k < n$ is finding
+\begin{equation*}
+    (\vec{W}, \vec{z}_1, \dotsc, \vec{z}_n) = \arg\min{
+        \sum_{i=1}^n{\norm{\vec{W} \vec{z}_i - \vec{x}_i}_2^2}
+    }
+\end{equation*}
+where $\vec{W} \in \mathbb{R}^{d \times k}$ is orthogonal and
+$\vec{z}_i \in \mathbb{R}^k$.
+
+Let $\vec{\Sigma}$ be the empirical covariance, given as
+\begin{equation*}
+    \vec{\Sigma} =
+    \frac{1}{n} \vec{X}^T \vec{X} =
+    \frac{1}{n} \sum_{i=1}^n{
+        \vec{x}_i \vec{x}_i^T
+    }
+\end{equation*}
+
+The solution to the PCA problem in closed-form is given by
+\begin{align*}
+    \vec{W} &= (\vec{v}_1, \dotsc, \vec{v}_k) \\
+    \vec{z}_i &= \vec{W}^T \vec{x}_i
+\end{align*}
+where $\vec{\Sigma}$ is decomposed as
+\begin{equation*}
+    \vec{\Sigma} = \vec{V} \vec{D} \vec{V}^T
+    = \sum_{i=1}^d{\lambda_i \vec{v}_i \vec{v}_i^T}
+\end{equation*}
+and the $\lambda_i$ are ordered in descending order,
+$\lambda_1 \geq \dotsb \geq \lambda_d \geq 0$.
+
+Then, the linear mapping $f(\vec{x}) = \vec{W}^T \vec{x}$
+projects $\vec{x} \in \mathbb{R}^d$ to a $k$-dimensional
+subspace $\mathbb{R}^k$.
+It minimises the reconstruction error with respect to
+the Euclidian norm.
+
+Typically, if the data set is clustered,
+PCA preserves those clusters.
+
+
+\subsection{Derivation for $k = 1$}
+Assume $\vec{\mu} = \frac{1}{n} \sum_{i=1}^n{\vec{x}_i} = \vec{0}$.
+
+The goal is to represent data points $\vec{x}_i$ on a line
+$\vec{w} \in \mathbb{R}^d$ with coefficients $z_i$.
+Thus, we want $z_i \vec{w} \approx \vec{x}_i$.
+
+To get a unique solution, we further require $\vec{w}$
+to be normalised, i.e. $\norm{\vec{w}}_2 = 1$.
+Then, we can jointly optimise
+\begin{equation*}
+    (\vec{w}^*, \vec{z}^*) = \arg\min_{\norm{\vec{w}}_2 = 1, \vec{z}}{
+        \underbrace{
+            \sum_{i=1}^n{\norm{z_i \vec{w} - \vec{x}_i}_2^2}
+        }_{\hat{R}(\vec{w}, \vec{z})}
+    }
+\end{equation*}
+
+For a fixed $\vec{w}$, with $\norm{\vec{w}}_2 = 1$,
+the optimal $z_i$ is given as the
+orthogonal projection of $\vec{x}_i$ onto $\vec{w}$, i.e.
+\begin{equation*}
+    z_i^* = \vec{w}^T \vec{x}_i
+\end{equation*}
+This leads to the equivalent optimisation objective
+\begin{equation*}
+    \vec{w}^* = \arg\min_{\norm{\vec{w}}_2 = 1}{
+        \underbrace{
+            \sum_{i=1}^n{\norm{\vec{w} \vec{w}^T \vec{x}_i - \vec{x}_i}_2^2}
+        }_{\hat{R}(\vec{w})}
+    }
+\end{equation*}
+
+Now, the empirical risk can be reformulated:
+\begin{align*}
+    \hat{R}(\vec{w}) &= \sum_{i=1}^n{
+        (\vec{w} \vec{w}^T \vec{x}_i - \vec{x}_i)^T
+        (\vec{w} \vec{w}^T \vec{x}_i - \vec{x}_i)
+    } \\
+    &= \sum_{i=1}^n{
+        \vec{x}_i^T \vec{w} \underbrace{\vec{w}^T \vec{w}}_{=1} \vec{w}^T \vec{x}_i
+        - 2 \vec{x}_i^T \vec{w} \vec{w}^T \vec{x}_i
+        + \vec{x}_i^T \vec{x}_i
+    } \\
+    &= \sum_{i=1}^n{
+        \underbrace{(\vec{w}^T \vec{x}_i)^T (\vec{w}^T \vec{x}_i)}_{= (\vec{w}^T \vec{x}_i)^2}
+        - 2 \underbrace{(\vec{w}^T \vec{x}_i)^T (\vec{w}^T \vec{x}_i)}_{= (\vec{w}^T \vec{x}_i)^2}
+        + \underbrace{\vec{x}_i^T \vec{x}_i}_{= \norm{\vec{x}_i}_2^2}
+    } \\
+    &= \underbrace{\sum_{i=1}^n{\norm{\vec{x}_i}_2^2}}_{
+        = \text{ const w.r.t. $\vec{w}$}
+    }
+    - \sum_{i=1}^n{(\vec{w}^T \vec{x}_i)^2}
+\end{align*}
+
+Thus, minimising the previous objective is equivalent to
+maximising the new objective
+\begin{equation*}
+    \vec{w}^* = \arg\max_{\norm{\vec{w}}_2 = 1}{
+        \sum_{i=1}^n{(\vec{w}^T \vec{x}_i)^2}
+    }
+\end{equation*}
+
+By reformulating
+\begin{equation*}
+    \sum_{i=1}^n{(\vec{w}^T \vec{x}_i)^2}
+    = \sum_{i=1}^n{\vec{w}^T \vec{x}_i \vec{x}_i^T \vec{w}}
+    = \vec{w}^T \underbrace{\sum_{i=1}^n{(\vec{x}_i \vec{x}_i^T)}}_{= n \vec{\Sigma}} \vec{w}
+\end{equation*}
+this is again equivalent to the final objective
+\begin{equation*}
+    \vec{w}^* = \arg\max_{\norm{\vec{w}}_2 = 1}{
+        \vec{w}^T \vec{\Sigma} \vec{w}
+    }
+\end{equation*}
+where $\vec{\Sigma} = \frac{1}{n} \sum_{i=1}^n{\vec{x}_i \vec{x}_i^T}$ is the empirical covariance assuming the
+data is centred.
+
+We can take the eigendecomposition of $\vec{\Sigma}$ and
+write it as
+$\vec{\Sigma} = \sum_{i=1}^d{\lambda_i \vec{v}_i \vec{v}_i^T}$
+with $\lambda_1 \geq \dotsb \geq \lambda_d \geq 0$.
+$\vec{w}$ can also be represented in the eigenbasis
+of $\vec{\Sigma}$ as
+$\vec{w} = \sum_{i=1}^d{\alpha_i \vec{v}_i}$.
+All $\alpha_i \geq 0$ and must sum to $1$,
+are thus a probability distribution.
+
+Now, the objective can be rewritten as
+\begin{align*}
+    \vec{w}^T \vec{\Sigma} \vec{w}
+    &= \left(
+        \sum_{i=1}^d{\alpha_i \vec{v}_i}
+    \right)^T \left(
+        \sum_{j=1}^d{\lambda_j \vec{v}_j \vec{v}_j^T}
+    \right) \left(
+        \sum_{k=1}^d{\alpha_k \vec{v}_k}
+    \right) \\
+    &= \sum_{i=1}^d{\sum_{j=1}^d{\sum_{k=1}^d{
+        \alpha_i \alpha_k \lambda_j
+        \underbrace{(\vec{v}_i^T \vec{v}_j)}_{\delta_{i,j}}
+        \underbrace{(\vec{v}_j^T \vec{v}_k)}_{\delta_{j,k}}
+    }}} \\
+    &= \sum_{i=1}^d{\alpha_i^2 \lambda_i}
+\end{align*}
+
+From the constraint $\norm{\vec{w}}_2 = 1$ we have
+$\sum_{i=1}^d{\alpha_i^2} = 1$,
+thus the optimal solution is given by
+$\alpha_1 = 1$ and $\alpha_i = 0$ for all $i > 1$
+because $\lambda_1$ is the maximum value.
+
+Therefore, the maximum is given by the principal eigenvector
+of $\vec{\Sigma}$.
+This generalises for $k > 1$ principal components.
+
+
+\subsection{Connection to SVD}
+Let $\vec{X} \in \mathbb{R}^{n \times d}$ be the data matrix,
+centred.
+Furhtermore, let $\vec{X} = \vec{U} \vec{S} \vec{V}^T$ be
+the SVD of $\vec{X}$ where $\vec{U} \in \mathbb{R}^{n \times n}$
+and $\vec{V} \in \mathbb{R}^{d \times d}$ are orthogonal,
+and $\vec{S} \in \mathbb{R}^{n \times d}$ contains the singular
+values in decreasing order on its diagonal.
+
+The top $k$ principal components are then the first $k$
+columns of $\vec{V}$:
+\begin{equation*}
+    n \vec{\Sigma}
+    = \vec{X}^T \vec{X}
+    = \vec{V} \vec{S}^T \underbrace{\vec{U}^T \vec{U}}_{=\vec{I}} \vec{S} \vec{V}^T
+    = \vec{V} \underbrace{\vec{S}^T \vec{S}}_{= \vec{D}} \vec{V}^T
+\end{equation*}
+
+
+\subsection{Model Selection}
+Cross-validation can be used to select the parameter $k$
+by evaluating the cost.
+
+Another approach is to pick $k$ so that most of the variance
+is explained.
+TODO: How?
+
+
+\subsection{Comparison to k-means}
+There exists a equivalent formulation for the k-means problem
+which is very similar to the PCA problem.
+
+The PCA problem is
+\begin{equation*}
+    (\vec{W}, \vec{z}_1, \dotsc, \vec{z}_n) = \arg\min{
+        \sum_{i=1}^n{\norm{\vec{W} \vec{z}_i - \vec{x}_i}_2^2}
+    }
+\end{equation*}
+where $\vec{W} \in \mathbb{R}^{d \times k}$ is orthogonal and
+$\vec{z}_i \in \mathbb{R}^k$.
+
+The k-means problem is
+\begin{equation*}
+    (\vec{W}, \vec{z}_1, \dotsc, \vec{z}_n) = \arg\min{
+        \sum_{i=1}^n{\norm{\vec{W} \vec{z}_i - \vec{x}_i}_2^2}
+    }
+\end{equation*}
+where $\vec{W} \in \mathbb{R}^{d \times k}$ is arbitrary and
+$\vec{z}_i \in E_k$ where $E_k$ is the set of unit vectors
+in $\mathbb{R}^k$.
+
+The discrete nature of the k-means problem makes it NP-hard.
+Conversely, PCA can be used to initialise k-means cluster centres.
+
+The line between the centroids for $k=2$ approximates
+the first principal component,
+the plane between the centroids for $k=3$ the first
+two principal components, etc.
+
+
+\subsection{Kernelised PCA}
+For non-linear problems, PCA can be kernelised.
+
+Let $k \geq 1$ be the target dimensionality
+and $\vec{K} \in \mathbb{R}^{n \times n}$
+be the kernel/Gram matrix and its eigendecomposition
+$\vec{K} = \sum_{i=1}^n{\lambda_i \vec{v}_i \vec{v}_i^T}$
+with $\lambda_1 \geq \dotsb \geq \lambda_n \geq 0$.
+
+The \emph{kernel principal components} are given by
+$\vec{\alpha}^{(1)}, \dotsc, \vec{\alpha}^{(k)} \in \mathbb{R}^n$
+where
+\begin{equation*}
+    \vec{\alpha}^{(i)} = \frac{1}{\sqrt{\lambda_i}}
+    \vec{v}_i
+\end{equation*}
+
+Given this, a new point $\vec{x}$ is projected as
+$\vec{z} \in \mathbb{R}^k$ with
+\begin{equation*}
+    z_i = \sum_{j=1}^n{
+        \alpha_j^{(i)} k(\vec{x}, \vec{x}_j)
+    }
+\end{equation*}
+
+The kernel has to be centred where
+$\vec{E} = \frac{1}{n} [1, \dotsc, 1] [1, \dotsc, 1]^T$ as
+\begin{equation*}
+    \vec{K}' = \vec{K} - \vec{K}\vec{E} - \vec{E}\vec{K} + \vec{E}\vec{K}\vec{E}
+\end{equation*}
+
+\emph{Kernel-k-means} refers to applying k-means onto
+kernel principal components.
+
+
+\subsubsection{Derivation for $k=1$}
+For PCA, $\vec{w}^*$ is the leading eigenvector $\lambda$
+of $\vec{X}^T \vec{X}$.
+Thus,
+\begin{equation*}
+    \vec{X}^T \underbrace{\vec{X} \vec{w}}_{\vec{\beta}}
+    = \lambda \vec{w}
+    \Rightarrow
+    \vec{w} = \frac{1}{\lambda} \vec{X}^T \vec{\beta}
+        = \frac{1}{\lambda} \sum_{i=1}^{n}{\beta_i \vec{x}_i}
+\end{equation*}
+
+Therefore, with $\alpha_i = \frac{\beta_i}{\lambda}$,
+the general Ansatz holds:
+\begin{equation*}
+    \vec{w} = \sum_{i=1}^n{\alpha_i \vec{x}_i}
+\end{equation*}
+Now, both the objective and constraint have to be expressed in
+terms of $\alpha$ and inner products.
+
+Let $\vec{K}$ be the kernel/Gram matrix
+($\vec{K}_{i,j} = k(\vec{x}_i, \vec{x}_j)$)
+and $\vec{K}_i$ its $i$-th column.
+
+For the objective, we have
+\begin{align*}
+    \vec{w}^T \vec{X}^T \vec{X} \vec{w} &=
+        \sum_{i=1}^n{(\vec{w}^T \vec{x}_i)^2} \\
+    &= \sum_{i=1}^n{\left((
+        \sum_{j=1}^n{\alpha_j \vec{x}_j}
+    )^T \vec{x}_i\right)^2} \\
+    &= \sum_{i=1}^n{\left(
+        \sum_{j=1}^n{\alpha_j \vec{x}_j^T \vec{x}_i}
+    \right)^2} \\
+    &= \sum_{i=1}^n{\left(
+        \sum_{j=1}^n{\alpha_j k(\vec{x}_j, \vec{x}_i)}
+    \right)^2} \\
+    &= \sum_{i=1}^n{\left(
+        \vec{\alpha}^T \vec{K_i}
+    \right)^2} \\
+    &= \vec{\alpha}^T \vec{K}^T \vec{K} \vec{\alpha}
+\end{align*}
+
+For the constraints, we have
+\begin{align*}
+    \norm{\vec{w}}_2 &= \vec{w}^T \vec{w} \\
+    &= \left(\sum_{i=1}^n{\alpha_i \vec{x}_i}\right)^T
+        \left(\sum_{i=1}^n{\alpha_i \vec{x}_i}\right) \\
+    &= \sum_{i=1}^n{
+        \sum_{j=1}^n{
+            \alpha_i \alpha_j \vec{x}_i^T \vec{x}_j
+        }
+    } \\
+    &= \sum_{i=1}^n{
+        \sum_{j=1}^n{
+            \alpha_i \alpha_j k(\vec{x}_i, \vec{x}_j)
+        }
+    } \\
+    &= \sum_{i=1}^n{
+        \alpha_i \vec{K}_i \vec{\alpha}
+    } \\
+    &= \vec{\alpha}^T \vec{K} \vec{\alpha} \\
+    &\overset{!}{=} 1
+\end{align*}
+
+Thus, the goal is
+\begin{equation*}
+    \vec{\alpha}^* = 
+    \arg\max_{\vec{\alpha}^T \vec{K} \vec{\alpha}}{
+        \vec{\alpha}^T \vec{K}^T \vec{K} \vec{\alpha}
+    }
+\end{equation*}
+
+The optimal solution is then obtained by
+\begin{equation*}
+    \vec{\alpha}^* =
+    \frac{1}{\sqrt{\lambda_1}} \vec{v}_1
+\end{equation*}
+
+Scaling is required because
+\begin{align*}
+    \vec{\alpha}^{*^T} \vec{K} \vec{\alpha}^* &=
+        \frac{1}{\sqrt{\lambda_1}} \vec{v}_1^T
+        \vec{K}
+        \frac{1}{\sqrt{\lambda_1}} \vec{v}_1 \\
+    &= \frac{1}{\lambda_1} \vec{v}_1^T \vec{K} \vec{v}_1 \\
+    &= \frac{1}{\lambda_1} \vec{v}_1^T (\lambda_1 \vec{v}_1) \\
+    &= \vec{v}_1^T \vec{v}_1 \\
+    &= 1
+\end{align*}
+
+
+\subsection{Maximum Variance Perspective}
+Instead of minimising the reconstruction error,
+PCA can also be interpreted as maximising the
+variance of the projected data.
+
+The \emph{projected variance} is
+\begin{equation*}
+    Q_R(\vec{\Sigma}, \vec{w}) =
+    \frac{1}{n} \sum_{i=1}^n{\norm{
+        \vec{w}^T \vec{x}_i - \vec{w}^T \bar{\vec{x}}
+    }_2^2}
+    = \vec{w}^T \vec{\Sigma} \vec{w}
+\end{equation*}
+where $\bar{\vec{x}} = \frac{1}{n} \sum_{i=1}^n{\vec{x}_i}$
+is the data mean and
+$\vec{\Sigma} = \frac{1}{n}\sum_{i=1}^n{(\vec{x}_i - \bar{\vec{x}}) (\vec{x}_i - \bar{\vec{x}})^T}$
+the data covariance.
+If $\bar{\vec{x}} = \vec{0}$ then
+$\vec{\Sigma} = \frac{1}{n} \vec{X}^T \vec{X}$.
+
+Now, if we want to maximise the projected variance,
+\begin{equation*}
+    \vec{w}^* = \arg\max_{\vec{w}}{
+        \vec{w}^T \vec{\Sigma} \vec{w} + \lambda (1 - \vec{w}^T \vec{w})
+    }
+\end{equation*}
+by setting the derivative to zero we get
+\begin{align*}
+    \frac{\partial}{\partial \vec{w}}
+    \vec{w}^T \vec{\Sigma} \vec{w} + \lambda (1 - \vec{w}^T \vec{w}) &= 2 \vec{\Sigma} \vec{w} - 2 \lambda \vec{w} = 0 \\
+    \Leftrightarrow \vec{\Sigma} \vec{w}
+    &= \lambda \vec{w} \\
+    \Leftrightarrow \vec{w}^T \vec{\Sigma} \vec{w} &= \lambda
+\end{align*}
+Thus, $\vec{w}$ is an eigenvector of $\vec{\Sigma}$ and
+$\vec{w}^T \vec{\Sigma} \vec{w} = \lambda$,
+i.e. the variance is given by the eigenvalue of $\vec{\Sigma}$.
+
+The PCA solution selects the eigenvector of $\vec{\Sigma}$
+with the largest eigenvalue $\lambda$.
+Thus, the PCA solution maximises the projected variance.
+The derivation in the $k$-dimensional case is equivalent,
+except that the trace of the arg max is taken.
+
+It holds that
+variance plus error squared is constant.
+Thus, maximising the variance corresponds to minimising
+the error.

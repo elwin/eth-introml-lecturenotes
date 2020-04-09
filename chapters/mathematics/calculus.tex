@@ -1,0 +1,162 @@
+\section{Calculus}
+For $h > 0$, the derivative of a univariate function $f$ at $x$ is defined as
+the limit
+\begin{equation*}
+    \frac{df}{dx} := \lim_{h \to 0}{\frac{f(x + h) - f(x)}{h}}
+\end{equation*}
+
+The following is a useful identity:
+\begin{equation*}
+    (x + h)^n = \sum_{i = 0}^n{\binom{n}{i} x^{n - i}h^i}
+\end{equation*}
+
+The following are the differentiation rules for univariate functions:
+\begin{equation*}
+    (f(x) \cdot g(x))' = f'(x) \cdot g(x) + f(x) \cdot g'(x)
+\end{equation*}
+\begin{equation*}
+    \left( \frac{f(x)}{g(x)} \right)' = \frac{f'(x) g(x) - f(x) g'(x)}{g(x)^2}
+\end{equation*}
+\begin{equation*}
+    (f(x) + g(x))' = f'(x) + g'(x)
+\end{equation*}
+\begin{equation*}
+    (g(f(x)))' = (g \circ f)'(x) = g'(f(x)) f'(x)
+\end{equation*}
+
+TODO: Some common derivatives.
+
+For a function $f : \mathbb{R}^n \to \mathbb{R}, x \mapsto f(x), x \in \mathbb{R}^n$
+of $n$ variables, the $i$-th partial derivative is defined as
+\begin{equation*}
+    \frac{\partial f}{\partial x_i} = \frac{f(x_1, \dotsc, x_{i - 1}, x_i + h, x_{i + 1}, \dotsc, x_n}{h}
+\end{equation*}
+
+The gradient/Jacobian is a row vector containing the collection of all partial derivatives, i.e.
+\begin{equation*}
+    \nabla_x{f} = grad f = \frac{d f}{d x} = \left[ \frac{\partial f}{\partial x_1}, \dotsc, \frac{\partial f}{\partial x_n} \right] \in \mathbb{R}^{1 \times n}
+\end{equation*}
+
+Remark: Gradients are themselves $n$-ary functions, not values!
+The gradiet is always orthogonal to the contour line
+$\{x : f(x) = f(x_0)\}$.
+
+The following are the general differentiation rules for functions mapping to $\mathbb{R}$.
+Note that now, vectors and matrices are involved, thus multiplications are matrix multiplications.
+\begin{equation*}
+    \frac{\partial}{\partial x} (f(x) \cdot g(x)) 
+    = \frac{\partial f}{\partial x} \cdot g(x) + f(x) \cdot \frac{\partial g}{\partial x}
+\end{equation*}
+\begin{equation*}
+    \frac{\partial}{\partial x} (f(x) + g(x)) 
+    = \frac{\partial f}{\partial x} + \frac{\partial g}{\partial x}
+\end{equation*}
+\begin{equation*}
+    \frac{\partial}{\partial x} (f \circ g)(x) 
+    = \frac{\partial}{\partial x} (f(g(x)))
+    = \frac{\partial g}{\partial f} \cdot \frac{\partial f}{\partial x}
+\end{equation*}
+
+TODO: Chain rule stuff from MML Book
+
+For a vector-valued function $f : \mathbb{R}^n \to \mathbb{R}^m, m > 1$
+and a vector $x = [x_1, \dotsc, x_n]^T$,
+the function can be viewed as a vector of functions:
+\begin{equation*}
+    f(x) = 
+    \begin{bmatrix}
+    f_1(x) \\
+    \vdots \\
+    f_m(x)
+    \end{bmatrix}
+    \in \mathbb{R}^m
+\end{equation*}.
+The derivation for each $f_i$ is then as before, leading to the partial derivative
+\begin{equation*}
+    \frac{\partial f}{\partial x_i} =
+    \begin{bmatrix}
+    \frac{\partial f_1}{\partial x_i} \\
+    \vdots \\
+    \frac{\partial f_m}{\partial x_i}
+    \end{bmatrix}
+    \in \mathbb{R}^m
+\end{equation*}
+
+The Jacobian is the collection of all first-order derivatives of a vector-valued function
+$f : \mathbb{R}^n \to \mathbb{R}^m$.
+It is a matrix $J \in \mathbb{R}^{m \times n}$ defined as
+\begin{equation*}
+    J = \nabla_x f = \frac{d f(x)}{d x} =
+    \begin{bmatrix}
+    \frac{\partial f_1}{\partial x_1} & \dots & \frac{\partial f_1}{\partial x_n} \\
+    \vdots & & \vdots \\
+    \frac{\partial f_m}{\partial x_1} & \dots & \frac{\partial f_m}{\partial x_n}
+    \end{bmatrix}
+\end{equation*}
+and thus $J(i, j) = \frac{\partial f_i}{\partial x_j}$.
+
+For a matrix $A \in \mathbb{R}^{m \times n}$ and a corresponding function $f(x) = Ax$,
+the Jacobian of $f$ is equal to $A$,
+i.e. $\frac{d f}{d x} = A$.
+
+To compute gradients of matrix-valued functions, there are 2 approaches.
+Let $f : \mathbb{R}^{m \times n} \to \mathbb{R}^{p \times q}$ be a matrix-valued function.
+We can either calculate the gradient directly, resulting in a 4-dimensional Jacobian tensor
+with shape $(m \times n) \times (p \times q)$ with entries
+$J_{ijkl} = \frac{\partial A_{ij}}{\partial B_{kl}}$.
+Alternatively, we can reshape the matrices into vectors,
+resulting in a Jacobian of shape $mn \times pq$.
+
+The following are useful identities:
+\begin{equation*}
+    \frac{\partial}{\partial X} f(X)^T = \left( \frac{\partial f(X)}{\partial X} \right)^T
+\end{equation*}
+\begin{equation*}
+    \frac{\partial}{\partial X} tr(f(X)) = tr\left( \frac{\partial f(X)}{\partial X} \right)
+\end{equation*}
+\begin{equation*}
+    \frac{\partial}{\partial X} det(f(X)) = det(f(X)) tr\left( f(X)^{-1} \frac{\partial f(X)}{\partial X} \right)
+\end{equation*}
+\begin{equation*}
+    \frac{\partial}{\partial X} f(X)^{-1} = -f(X)^{-1} \frac{\partial f(X)}{\partial X} f(X)^{-1} 
+\end{equation*}
+\begin{equation*}
+    \frac{\partial a^T X^{-1} b}{\partial X}
+    = -(X^{-1})^T ab^T (X^{-1})^T
+\end{equation*}
+\begin{equation*}
+    \frac{\partial x^T a}{\partial x} = a^T
+\end{equation*}
+\begin{equation*}
+    \frac{\partial a^T x}{\partial x} = a^T
+\end{equation*}
+\begin{equation*}
+    \frac{\partial a^T X b}{\partial X} = ab^T
+\end{equation*}
+\begin{equation*}
+    \frac{\partial x^T B x}{\partial x} = x^T (B + B^T)
+\end{equation*}
+\begin{equation*}
+    \frac{\partial}{\partial s} (x - As)^T W (x - As)
+    = -2 (x - As)^T W A \text{ for symmetric $W$}
+\end{equation*}
+
+TODO: Automatic differentiation
+
+The notation for higher-order derivatives is as follows:
+$\frac{\partial^n f}{\partial x^n}$ is the $n$-th partial derivative with respect to $x$;
+$\frac{\partial^2 f}{\partial y \partial x} = \frac{\partial}{\partial y} \left( \frac{\partial f}{\partial x} \right)$ is the partial derivative first with respect to $x$ and then to $y$.
+
+The Hessian is the collection of all second-order partial derivatives.
+The Hessian matrix is in many cases symmetric and defined as
+\begin{equation*}
+    \nabla^2_{x_1, \dotsc, x_n} =
+    \begin{bmatrix}
+        \frac{\partial^2 f}{\partial x_1^2} & \dots & \frac{\partial^2 f}{\partial x_n \partial x_1} \\
+        \vdots & & \vdots \\
+        \frac{\partial^2 f}{\partial x_1 \partial x_m} & \dots & \frac{\partial^2 f}{\partial x_n \partial x_m}
+    \end{bmatrix}
+\end{equation*}
+
+For a vector field $f : \mathbb{R}^{n} \to \mathbb{R}^m$,
+the Hessian is a ($m \times n \times n$)-tensor.

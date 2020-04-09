@@ -1,0 +1,415 @@
+\section{Naive Bayes Model}
+Naive Bayes is a generative model.
+
+The class labels
+$y \in \mathcal{Y} = \{1, \dotsc, c\}$
+are modelled as being generated
+from a categorical variable:
+\begin{equation*}
+    P(Y = y) = p_y, p_y \geq 0, \sum_{y=1}^c{p_y} = 1
+\end{equation*}
+
+The features are modelled conditionally
+independent given Y:
+\begin{equation*}
+    P(X_1, \dotsc, X_d \mid Y)
+    = \prod_{i=1}^d{P(X_i \mid Y)}
+\end{equation*}
+i.e. given a class label,
+each feature is generated independently
+of all other features.
+
+This is a very strong modelling assumption
+which in practice often does not hold
+(but still works well).
+
+The feature distributions $P(X_i \mid Y)$
+still need to be defined.
+They lead to different Naive Bayes classifiers.
+
+
+\subsection{Decision Rules}
+Let $\hat{P}(y)$ and
+$\hat{P}(\vec{x} \mid y)$
+be the estimated distributions.
+
+To predict the label $y$ for a new
+example $\vec{x}$,
+Bayes' theorem can be used
+\begin{equation*}
+    P(y \mid \vec{x}) =
+    \frac{1}{Z} P(y) P(\vec{x} \mid y)
+\end{equation*}
+with
+\begin{equation*}
+    Z = \sum_{y=1}^c{
+        P(y) P(\vec{x} \mid y)
+    }
+\end{equation*}
+
+The label $\hat{y}$ can then be
+predicted using Bayesian decision theory:
+\begin{equation*}
+    \hat{y} =
+    \arg\max_y{\hat{P}(y \mid \vec{x})} =
+    \arg\max_y{\hat{P}(y) \prod_{i=1}^d{\hat{P}(x_i \mid y)}}
+\end{equation*}
+
+
+\subsection{Gaussian Naive Bayes Classifier}
+In a GNB, the features are modelled
+as \emph{conditionally independent Gaussians}:
+\begin{equation*}
+    P(x_i \mid y)
+    = \mathcal{N}(x_i \mid \mu_{y,i}, \sigma^2_{y, i})
+\end{equation*}
+Note that $\mu$ and $\sigma^2$
+depend on the class and feature,
+i.e. there are $c \cdot d$
+versions of each parameter.
+
+\subsubsection{MLE for Two Classes}
+Assume there are two classes,
+i.e. $\mathcal{Y} = \{+1, -1\}$.
+Let $D$ be the data set.
+
+We have $P(Y = +1) = p$ and
+$P(Y = -1) = (1 - p)$.
+The MLE for $p$ is
+\begin{equation*}
+    \arg\max_p{P(D \mid p)}
+    = \frac{n_+}{n_+ + n_-}
+\end{equation*}
+where $n_+$ is the number of positive
+samples, $n_-$ the number of negative
+samples.
+
+The conditional distribution for the
+data is $P(x_i \mid y) = \mathcal{N}(x_i; \mu_{y, i}, \sigma^2_{y, i})$.
+Then we have to do the usual MLE for
+Gaussian distributions.
+TODO: Result.
+
+\subsubsection{Summary}
+Let
+$D = \{(\vec{x}_1, y_1), \dotsc, (\vec{x}_n, y_n)\}$
+be the data set
+with $y_i \in \{1, \dotsc, c\}$.
+
+The MLE for the class prior is
+\begin{equation*}
+    \hat{p}_y = \hat{P}(Y = y)
+    = \frac{Count(Y = y)}{n}
+\end{equation*}
+
+The MLE for the feature distribution
+$\hat{P}(x_i \mid y) = \mathcal{N}(x_i; \hat{\mu}_{y, i}, \sigma^2_{y,i})$ is
+\begin{align*}
+    \hat{\mu}_{y,i} &=
+    \frac{1}{Count(Y = y)}
+    \sum_{j:y_j = y}{x_{j,i}} \\
+    \hat{\sigma}^2_{y, i} &=
+    \frac{1}{Count(Y = y)}
+    \sum_{j:y_j = y}{(
+        x_{j,i} - \hat{\mu}_{y,i}
+    )^2}
+\end{align*}
+i.e. the empirical mean and variance
+for all examples with class $y$.
+
+Prediction given $\vec{x}$ is
+\begin{equation*}
+    \hat{y} = \arg\max_y{
+        \hat{P}(y \mid \vec{x})
+    }
+    = \arg\max_y{
+        \hat{P}(y)
+        \prod_{i=1}^d{
+            \hat{P}(x_i \mid y)
+        }
+    }
+\end{equation*}
+
+\subsubsection{Binary Classification}
+In the binary case ($c = 2$),
+the above prediction is equivalent to
+\begin{equation*}
+    \hat{y} = sign\left( \log{
+    \frac{
+    \overbrace{P(Y = +1 \mid \vec{x})}^p
+    }
+    {P(Y = -1 \mid \vec{x})}
+    }\right)
+\end{equation*}
+
+The \emph{discriminant function} is defined as
+\begin{equation*}
+    f(\vec{x}) = \log{\frac
+    {P(Y = +1 \mid \vec{x})}
+    {P(Y = -1 \mid \vec{x})}
+    }
+\end{equation*}
+
+Now two further assumptions are introduced.
+Assumption 1 is that
+$P(Y = +1) = P(Y = -1) = 0.5$,
+i.e. both classes have equal probability.
+Assumption 2 is that
+$\forall y \in \mathcal{Y} : \sigma^2_{y,i} = \sigma^2_i$,
+i.e. the variance and the class are independent.
+
+TODO: Derivation?
+Then,
+\begin{equation*}
+    f(\vec{x}) = \vec{w}^T \vec{x} + w_0
+\end{equation*}
+i.e. GNB produces a linear classifier with
+\begin{align*}
+    w_0 &= \log{\frac{\hat{p}_+}{1-\hat{p}_+}}
+    + \sum_{i=1}^d{
+        \frac{\hat{\mu}^2_{-,i} - \hat{\mu}^2_{+, i}}{2\hat{\sigma}^2_i}
+    } \\
+    w_i &= \frac
+    {\hat{\mu}_{+,i} - \hat{\mu}_{-,i}}
+    {\hat{\sigma}^2_i}
+\end{align*}
+
+If the GNB and other assumptions hold
+(independent features, conditioned on
+class labels, coming from Gaussian, assumptions 1 and 2)
+then the resulting decision boundary
+is equivalent to that from logistic regression:
+Let $p(x) := P(Y = +1 \mid \vec{x})$.
+\begin{align*}
+    &\Rightarrow f(\vec{x}) = \log{
+    \frac{p(\vec{x})}{1 - p(\vec{x})}
+    } \\
+    &\Rightarrow \exp{(f(\vec{x}))}
+    = \frac{p(\vec{x})}{1 - p(\vec{x})} \\
+    &\Rightarrow p(\vec{x}) =
+    \frac{\exp{(f(\vec{x}))}}
+    {1 + \exp{(f(\vec{x}))}}
+    = \frac{1}{1 + \exp{(-f(\vec{x}))}}
+    = \sigma(f(\vec{x}))
+\end{align*}
+
+
+\subsection{Poisson Naive Bayes Classifier}
+Let $\vec{x}_i \in \mathbb{N}^d, y \in \{0, 1\}$ be the
+i.i.d. observations.
+The Poisson Naive Bayes Classifier assumes
+$Y \sim Bernoulli(p)$ and
+$P(\vec{x}_i \mid y_i) = \prod_{j=1}^d{P(x_{i,j} \mid y_i)}$
+with $P(x_{i,j} \mid y_i) = Poiss(x_{i, j}; \lambda_{y_i, j})$.
+
+Let $n_0 := |\{i : y_i = 0\}|$ and
+$n_1 := |\{i : y_i = 1\}|$.
+
+The MLE for the labels is given as
+$p_0 = \frac{n_0}{n}$
+and $p_1 = \frac{n_1}{n} = 1 - p_0$.
+
+The MLE for the conditional distribution
+with $y \in \{0,1\}$ is given as
+\begin{equation*}
+    \lambda_{y,j} = \frac{
+    \sum_{i: y_i = y}^n{x_{i,j}}
+    }{n_y}
+\end{equation*}
+i.e. the mean of all samples of class $y$.
+
+It can be shown that the Poisson Naive Bayes Classifier
+produces a linear decision boundary.
+
+
+\subsection{Categorical Naive Bayes}
+Features may of course also take discrete values.
+Thus, it might not make sense to model
+them as Gaussians but e.g. as
+Bernoulli, Categorical or Multinomial.
+
+In the categorical case,
+the class labels are still assumed to
+be generated from a categorical variable, i.e.
+\begin{equation*}
+    P(Y = y) = p_y
+\end{equation*}
+with $y \in \mathcal{Y} = \{1, \dotsc, c\}$.
+
+The features are modelled as (conditionally)
+independent categorical random variables:
+\begin{equation*}
+    P(X_i = c \mid Y = y) = \theta^{(i)}_{c \mid y}
+\end{equation*}
+where $\theta^{(i)}_{c \mid y}$ is the
+probability that the $i$-th feature
+takes value $c$ for class $y$.
+
+\subsubsection{Estimation}
+The MLE for the class distribution,
+$\hat{P}(Y = y) = \hat{p}_y$,
+is again given as
+\begin{equation*}
+    \hat{p}_y = \frac{Count(Y = y)}{n}
+\end{equation*}
+
+The MLE for the distribution of feature $i$,
+$\hat{P}(X_i = c \mid Y = y) = \theta^{(i)}_{c \mid y}$,
+is given as
+\begin{equation*}
+    \theta^{(i)}_{c \mid y} =
+    \frac{Count(X_i = c, Y = y)}{Count(Y = y)}
+\end{equation*}
+
+\subsubsection{Prediction}
+Prediction for a new point $\vec{x}$ is
+done as usual as
+\begin{equation*}
+    \hat{y} = \arg\max_y{\hat{P}(y \mid \vec{x})}
+    = \arg\max_y{
+        \hat{P}(y) \prod_{i=1}^d{\hat{P}(x_i \mid y)}
+    }
+\end{equation*}
+
+\subsubsection{Dropping the Naive Assumption}
+Removing the naive assumption for
+categorical features is much harder.
+In general,
+it requires exponentially many parameters (in $d$).
+We have to specify
+$P(X_1 = x_1, \dotsc, X_d = x_d | Y = y)$ for each $x_1, \dotsc, x_d$,
+exponentially many numbers.
+This is computationally infeasible and very easy to overfit.
+
+However, there are models which replace the naive
+assumption with some weaker ones.
+
+
+\subsection{Mixing Distributions}
+Due to the naive assumption,
+each feature is modelled to be from a
+different conditional distribution.
+
+Those distributions do not have to be
+of the same type,
+and even discrete and continuous distributions
+can be mixed.
+Fitting (MLE) and prediction stays the same.
+
+
+\subsection{Regularisation}
+MLE is prone to overfitting as it maximises the likelihood
+for exactly the given realisation.
+MLE has nice asymptotic properties
+but for finite data, it is prone to overfitting.
+There are two ways to combat overfitting in
+generative modelling.
+
+One way is to restrict the model class,
+e.g. assumptions on the covariance structure.
+This results in fewer parameters.
+
+\subsubsection{Parameter Priors}
+In generative modelling,
+it is very natural to think about priors
+for regularisation.
+This poses a second form of regularisation.
+
+Priors are always applied to the distribution of $P(Y)$.
+We want to put a prior distribution $P(\theta)$
+and then compute the posterior distribution
+$P(\theta \mid y_1, \dotsc, y_n)$.
+
+TODO: Not 100 percent sure this makes sense.
+
+\subsubsection{Example: Beta Prior}
+Assume we have $c = 2$ and thus
+$P(Y = +1) = \theta$.
+
+The \emph{Beta-Distribution} is defined as
+\begin{equation*}
+    Beta(\theta; \alpha_+, \alpha_-) =
+    \frac{1}{B(\alpha_+, \alpha_-)}
+    \theta^{\alpha_+ - 1}
+    (1 - \theta)^{\alpha_- - 1}
+\end{equation*}
+
+$B(\alpha_+, \alpha_-)$ is
+a normalisation constant to
+ensure the integral becomes 1.
+If $\alpha_+$ is smaller than $\alpha_-$,
+the distribution is more peaked and the
+peak is more to the right.
+If both are less than 1,
+the resulting distribution is bimodal.
+If $\alpha_+$ and $\alpha_-$ go to infinity,
+the distribution is going to converge to a point mass
+on $\frac{\alpha_+}{\alpha_-}$.
+
+The interesting property of the Beta-distribution
+is that its posterior
+is also a Beta-distribution,
+i.e. it is \emph{conjugate} with the Binomial likelihood:
+\begin{equation*}
+    P(\theta \mid y_1, \dotsc, y_n; \alpha_+, \alpha_-)
+    = P(\theta \mid n_+, n_-, \alpha_+, \alpha_-)
+    = Beta(\theta; \alpha_+ + n_+, \alpha_- + n_-)
+\end{equation*}
+
+The MAP estimate is then given as
+\begin{equation*}
+    \hat{\theta} = \arg\max_{\theta}{P(\theta \mid y_1, \dotsc, y_n; \alpha_+, \alpha_-)}
+    = \frac{\alpha_+ + n_+ - 1}{\alpha_+ + n_+ + \alpha_- + n_- - 2}
+\end{equation*}
+Thus the $\alpha_+, \alpha_-$ act as pseudo-counts.
+
+
+\subsection{Issues}
+GNB models assume that features are generated
+independently given a class label.
+However, if there is (conditional)
+correlation between features, given class labels,
+then this assumption is violated!
+
+For example,
+assume $P(Y = +1) = P(Y = -1) = 0.5$ and
+further features
+$x_2, \dotsc, x_d = x_1$,
+i.e. are duplicates.
+A GNB classifier which only uses $x_1$
+has
+\begin{equation*}
+    f_1(x) = \log{
+        \frac{P(Y = +1 \mid x_1 = x)}
+        {P(Y = -1 \mid x_1 = x)}
+    }
+\end{equation*}
+where a classifier which uses all $d$
+features has
+\begin{equation*}
+    f_2(\vec{x}) = \log{
+    \frac
+    {\prod_{i=1}^d{P(X_i = x_i \mid Y = +1)}}
+    {\prod_{i=1}^d{P(X_i = x_i \mid Y = -1)}}
+    }
+    = d \cdot f_1(x_1)
+\end{equation*}
+Thus the prediction gets blown-up,
+i.e. become overconfident
+(very close to 0 or 1),
+even though it should theoretically not change.
+
+This is fine if only the most likely class
+matters, but bad if probabilities should
+be used for decision making.
+Logistic regression works better in that case
+because we do not look at $P(\vec{x})$ and thus
+do not have to explain correlation.
+Generally, logistic regression is more
+robust and better in terms of classification
+performance, but cannot provide information
+about $P(\vec{x})$.
+
+A way to overcome this is to
+drop the naive assumption,
+i.e. use full Gaussian Bayes Classifiers.

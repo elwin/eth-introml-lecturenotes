@@ -1,0 +1,250 @@
+\section{Logistic Regression}
+The idea of logistic regression is to use a
+(generalised) linear model for the class
+probability.
+The hyperplane defines the decision boundary,
+all points on the positive side correspond
+to the positive class, on the other side
+to the negative class.
+
+Therefore, $Y \in \{+1, -1\}$ and
+$P(Y = +1 \mid \vec{X} = \vec{x}) = \sigma(\vec{w}^T \vec{x})$
+where $\sigma$ is the logistic sigmoid function
+\begin{equation*}
+    \sigma(\vec{w}^T \vec{x})
+    = \frac{1}{1 + \exp{(-\vec{w}^T \vec{x})}}
+\end{equation*}
+This is called the \emph{link function}.
+
+TODO: Move this somewhere else? Maybe to prob. modelling?
+This relates to \emph{generalised linear models}.
+A generalised linear model is a model with
+a linear decision boundary $\vec{w}^T \vec{x} + w_0$.
+A link function converts the mean
+of a distribution to a linear predictor,
+and the mean function converts the linear
+predictor into a mean.
+TODO: Isn't sigmoid actually the mean function,
+and logit the link function?
+TODO: Link function for Poisson.
+
+From $P(Y = -1 \mid \vec{X} = \vec{x}) = 1 - P(Y = +1 \mid \vec{X} = \vec{x})$ we get
+\begin{equation*}
+    P(Y = y \mid \vec{X} = \vec{x})
+    = \sigma(y \vec{w}^T \vec{x})
+    = \frac{1}{1 + \exp{(-y \vec{w}^T \vec{x})}}
+\end{equation*}
+
+The resulting model assumption is
+\begin{equation*}
+    P(y \mid \vec{x}, \vec{w}) = Ber(y; \sigma(\vec{w}^T \vec{x}))
+\end{equation*}
+i.e. linear with Bernoulli noise.
+
+
+\subsection{Maximum Likelihood Estimate}
+If $\vec{w}$ and the $\vec{x}_i$ are independent,
+it holds that
+\begin{equation*}
+    P(y_i \mid \vec{x}_i, \vec{w})
+    = \frac{P(y_i, \vec{x}_i \mid \vec{w})}{P(\vec{x}_i \mid \vec{w})}
+    = \frac{P(y_i, \vec{x}_i \mid \vec{w})}{P(\vec{x}_i)}
+    = \text{const} \cdot P(y_i, \vec{x}_i \mid \vec{w})
+\end{equation*}
+From that, and by assuming the samples are i.i.d.,
+we can again minimise the conditional negative log likelihood
+\begin{equation*}
+    \arg\max_{\vec{w}}{P(D \mid \vec{w})}
+    = \arg\max_{\vec{w}}{P(y_{1:n} \mid \vec{x}_{1:n}, \vec{w})}
+    = \arg\min_{\vec{w}}{-\sum_{i=1}^n{
+        \log{P(y_i \mid \vec{x}_i, \vec{w})}
+    }}
+\end{equation*}
+
+The negative log likelihood of a single sample is
+\begin{equation*}
+    -\log{P(y_i \mid \vec{x}_i, \vec{w})}
+    = -\log{\frac{1}{1 + \exp{(-y \vec{w}^T \vec{x})}}}
+    = \log{(1 + \exp{(-y \vec{w}^T \vec{x})})}
+\end{equation*}
+
+This results in the \emph{logistic loss} function:
+\begin{equation*}
+    \ell_\text{logistic}(\vec{w}; \vec{x}, y) =
+    \log{(1 + \exp{(- y \vec{w}^T \vec{x})})}
+\end{equation*}
+
+The empirical risk is thus given as
+\begin{equation*}
+    \hat{R}(\vec{w}) = \sum_{i=1}^n{
+        \log{(1 + \exp{(-y_i \vec{w}^T \vec{x}_i)})}
+    }
+\end{equation*}
+
+The logistic loss is convex and can
+therefore be optimised using SGD and
+similar techniques.
+It is for very large and very small
+$z$, it is approximately linear and
+corresponds to the perceptron loss.
+However, its derivative is never
+exactly zero, and correct classifications
+close to the decision boundary
+($z \approx 0$) still exhibit
+a significant loss.
+
+The gradient of the logistic loss is
+\begin{equation*}
+    \nabla_{\vec{w}} \ell_\text{logistic}
+    = \underbrace{\frac{\exp{(-y\vec{w}^T \vec{x})}}{1+\exp{(-y \vec{w}^T \vec{x})}}}_{1 - P(Y = y \mid \vec{x})} \cdot (-y \vec{x})
+    = \underbrace{\frac{1}{1 + \exp{(y \vec{w}^T \vec{x})}}}_{P(Y \neq y \mid \vec{x})} \cdot (-y \vec{x})
+\end{equation*}
+
+The SGD update step is thus
+\begin{equation*}
+    \vec{w} \gets \vec{w} + \eta_t \cdot y \cdot \vec{x} \cdot P(Y = -y \mid \vec{x}, \vec{w})
+\end{equation*}
+
+
+\subsection{Maximum a Posteriori Estimate / Regularisation}
+Similar to linear regression, we can perform
+MAP estimation / use a regulariser.
+
+Using a Gaussian prior on the weights,
+corresponding to $L_2$ regularisation,
+results in the objective
+\begin{equation*}
+    \arg\min_{\vec{w}}{
+        \sum_{i=1}^n{\log{(1 + \exp{(-y_i \vec{w}^T \vec{x}_i)})}}
+        + \lambda \norm{\vec{w}}_2^2
+    }
+\end{equation*}
+
+Using a Laplace prior on the weights,
+corresponding to $L_1$ regularisation,
+results in the objective
+\begin{equation*}
+    \arg\min_{\vec{w}}{
+        \sum_{i=1}^n{\log{(1 + \exp{(-y_i \vec{w}^T \vec{x}_i)})}}
+        + \lambda \norm{\vec{w}}_1
+    }
+\end{equation*}
+
+The weight-update step for $L_2$ regularised
+logistic regression is
+\begin{equation*}
+    \vec{w} \gets \vec{w}(1 - 2 \lambda \eta_t) + \eta_t \cdot y \cdot \vec{x} \cdot \hat{P}(Y = -y \mid \vec{w}, \vec{x})
+\end{equation*}
+
+After finding the optimal $\hat{\vec{w}}$,
+prediction is done using the conditional
+distribution $P(y \mid \vec{x}, \hat{\vec{w}})$,
+which corresponds to predicting
+\begin{equation*}
+    \hat{y} = sign(\hat{\vec{w}}^T \vec{x})
+\end{equation*}
+
+
+\subsection{Kernelised Logistic Regression}
+Logistic regression can also be kernelised.
+
+Let $\vec{K}$ be the Gram matrix and
+$\vec{K}_i$ its $i$-th column.
+
+The optimisation objective is
+\begin{equation*}
+    \hat{\vec{\alpha}} = \arg\min_{\vec{\alpha}}{
+        \sum_{i=1}^n{
+            \log{\left( 1 + \exp{(-y_i \vec{\alpha}^T \vec{K}_i)} \right)}
+            + \lambda \vec{\alpha}^T \vec{K} \vec{\alpha}
+        }
+    }
+\end{equation*}
+
+Classification is then done using the conditional distribution
+\begin{equation*}
+    \hat{P}(y \mid \vec{x}, \hat{\vec{\alpha}}) =
+    \frac{1}{1 + \exp{(-y 
+        \underbrace{\sum_{j=1}^n{\hat{\alpha}_j k(\vec{x}_j, \vec{x})}}_{= \vec{w}^T \vec{x}}
+    )}}
+\end{equation*}
+and we can again predict the more likely class as
+\begin{equation*}
+    \hat{y} = sign\left(\sum_{j=1}^n{\hat{\alpha}_j k(\vec{x}_j, \vec{x})}\right)
+\end{equation*}
+
+
+\subsection{Multi-Class Logistic Regression}
+Logistic regression can be extended to the
+multi-class setting.
+The assumed distribution is then
+the categorical distribution instead
+of Bernoulli.
+
+Let $c$ be the number of classes.
+We maintain one weight vector
+$\vec{w}_i$ for each class $i \in \{1, \dotsc, c\}$.
+The respective class probability is modelled
+proportional to the total class probabilities.
+The function used is called the
+\emph{Softmax} function and defined as
+\begin{equation*}
+    P(Y = i \mid \vec{x}, \vec{w}_1, \dotsc, \vec{w}_c)
+    = \frac{\exp{(\vec{w}_i^T \vec{x})}}{
+        \sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x})}}
+    }
+    = \hat{p}_i
+\end{equation*}
+with $\sum_{i=1}^c{\hat{p}_i} = 1$.
+This is a strict generalisation of a binary model.
+
+The solution is not unique.
+If some scalar $\tau$ is added to each prediction
+it does not change:
+\begin{equation*}
+    \frac{\exp{(\vec{w}_i^T \vec{x} + \tau)}}{
+        \sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x} + \tau)}}
+    }
+    = \frac{e^\tau \cdot \exp{(\vec{w}_i^T \vec{x})}}{
+        e^\tau \cdot \sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x})}}
+    }
+    = \frac{\exp{(\vec{w}_i^T \vec{x})}}{
+        \sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x})}}
+    }
+\end{equation*}
+Uniqueness can be enforced by setting
+one weight vector to zero
+(e.g. $\vec{w}_c$) which corresponds
+to setting $\tau = -\vec{w}_c^T \vec{x}$
+and $\vec{w}_i \gets \vec{w}_i - \vec{w}_c^T \vec{x}$.
+
+This results in the cross-entropy loss
+\begin{equation*}
+    \ell_{CE}(y ; \vec{x}, \vec{w}_1, \dotsc, \vec{w}_c)
+    = - \log{P(Y = y \mid \vec{x}, \vec{w}_1, \dotsc, \vec{w}_c)}
+\end{equation*}
+
+TODO: Gradient of cross-entropy loss, Homework 6.
+
+TODO: Softmax in ANN
+
+TODO: Cross entropy in ANN
+
+If we add a $\tau$ to each argument, the $e^\tau$ is going to cancel out,
+thus we keep the original distribution.
+W.l.o.g. we can pick $\tau = -w_c^T x$ which corresponds to setting one weight vector
+(e.g. the last one) to $0$.
+TODO: Slide 29, multi-class logistic regression summary.
+Setting $w_c$ to $0$ forces uniqueness.
+This is called the cross-entropy loss.
+
+
+\subsection{Comparison to SVM}
+SVMs result in sparse solutions.
+This means that most of the $\alpha_i$ are zero.
+This does not hold for logistic regression as
+most of its $\alpha_i$ are non-zero.
+
+SVMs also sometimes result in higher classification
+accuracy. However, logistic regression provides
+class probabilities which is difficult in SVMs.

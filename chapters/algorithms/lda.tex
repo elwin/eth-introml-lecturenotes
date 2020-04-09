@@ -1,0 +1,142 @@
+\section{Fisher's Linear Discriminant Analysis}
+Suppose we use a GBC.
+Further assume
+\begin{itemize}
+    \item only two classes, $c = 2$.
+    \item equal class probabilities,
+    $p = P(Y = +1) = P(Y = -1) = 0.5$.
+    \item equal class covariances,
+    $\hat{\vec{\Sigma}}_- = \hat{\vec{\Sigma}}_+ = \hat{\vec{\Sigma}}$.
+\end{itemize}
+
+Then, the discriminant function greatly
+simplifies to
+\begin{equation*}
+    f(\vec{x}) = 
+    \vec{x}^T \hat{\vec{\Sigma}}^{-1}
+    (\hat{\vec{\mu}}_+ - \hat{\vec{\mu}}_-)
+    + \frac{1}{2}
+    \left(
+    \hat{\vec{\mu}}_-^T \hat{\vec{\Sigma}}^{-1} \hat{\vec{\mu}}_-
+    -
+    \hat{\vec{\mu}}_+^T \hat{\vec{\Sigma}}^{-1} \hat{\vec{\mu}}_+
+    \right)
+\end{equation*}
+TODO: Derivation?
+
+Under these assumptions, we then predict
+\begin{equation*}
+    \hat{y} = sign(f(\vec{x}))
+    = sign(\vec{w}^T \vec{x} + w_0)
+\end{equation*}
+with
+\begin{align*}
+    \vec{w} &= \hat{\vec{\Sigma}}^{-1}
+    (\hat{\vec{\mu}}_+ - \hat{\vec{\mu}}_-) \\
+    w_0 &= \frac{1}{2}
+    \left(
+    \hat{\vec{\mu}}_-^T \hat{\vec{\Sigma}}^{-1} \hat{\vec{\mu}}_-
+    -
+    \hat{\vec{\mu}}_+^T \hat{\vec{\Sigma}}^{-1} \hat{\vec{\mu}}_+
+    \right)
+\end{align*}
+Thus the resulting classifier is linear.
+
+This linear classifier is called
+\emph{Fisher's Linear Discriminant Analysis}
+(LDA).
+
+
+\subsection{Comparison}
+\subsubsection{Comparison to Logistic Regression}
+Fisher's LDA uses the discriminant function
+\begin{equation*}
+    f(\vec{x}) = \log{
+        \frac{P(Y = +1) \mid \vec{x})}{P(Y = -1 \mid \vec{x})}
+    }
+\end{equation*}
+which is derived
+$f(\vec{x}) = \vec{w}^T \vec{x} + w_0$.
+It can be rearranged to
+\begin{equation*}
+    P(Y = +1 \mid \vec{x}) = \frac{1}{1 + \exp{(-f(\vec{x})}}
+\end{equation*}
+and by using the derived form
+\begin{equation*}
+    P(Y = +1 \mid \vec{x}) = \sigma(\vec{w}^T \vec{x} + w_0)
+\end{equation*}
+
+This is the same form
+as logistic regression,
+assuming homogeneous coordinates
+are used.
+
+If the model assumptions are met,
+LDA will make the same prediction
+as logistic regression.
+
+Fisher's LDA is a generative model,
+i.e. models $P(\vec{x}, y)$.
+Logistic regression is a discriminative
+model, i.e. models $P(y \mid \vec{x})$.
+
+LDA can thus be used to detect
+outliers with $P(\vec{x}) < \tau$.
+It also assumes normality of $\vec{X}$,
+which is a very strong assumption.
+Logistic regression makes no assumptions
+on $\vec{X}$ but can also not be
+used to detect outliers.
+Generally, LDA is not very robust
+against violations of its assumptions
+where logistic regression,
+making less assumptions, is more robust.
+
+
+\subsubsection{Comparison to PCA}
+LDA can be viewed as a projection into
+a 1-dimensional subspace
+which maximises the ratio of
+between-class and within-class variance.
+
+In contrast, PCA maximises the
+variance of the resulting
+1-dimensional projection;
+it does not know about classes.
+
+
+\subsection{Quadratic Discriminant Analysis}
+There is no reason to assume that the
+variances are equal for different classes.
+
+In the resulting, more general case,
+the discriminant is
+\begin{equation*}
+    f(\vec{x}) =
+    \log{\frac{p}{1-p}} +
+    \frac{1}{2} \left[
+        \log{\frac{|\hat{\vec{\Sigma}}_-|}{|\hat{\vec{\Sigma}}_+|}}
+        +
+        \left(
+        (\vec{x}-\hat{\vec{\mu}}_-)^T
+        \hat{\vec{\Sigma}}_-^{-1}
+        (\vec{x}-\hat{\vec{\mu}}_-)
+        \right)
+        -
+        \left(
+        (\vec{x}-\hat{\vec{\mu}}_+)^T
+        \hat{\vec{\Sigma}}_+^{-1}
+        (\vec{x}-\hat{\vec{\mu}}_+)
+        \right)
+    \right]
+\end{equation*}
+with $|\cdot|$ denoting the (matrix)
+discriminant.
+Note that this is precisely the discriminant
+of a GBC.
+It has a quadratic form.
+
+The prediction is done as
+\begin{equation*}
+    \hat{y} = sign(f(\vec{x}))
+\end{equation*}

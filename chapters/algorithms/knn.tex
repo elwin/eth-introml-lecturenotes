@@ -1,0 +1,25 @@
+\section{$k$-Nearest Neighbour}
+For a data point $\vec{x}$,
+predict the majority of labels of its
+$k$ nearest neighbours.
+Nearness is measured according to some
+distance function.
+
+The $k$-nearest neighbour classifier can be
+viewed as an alternative to the perceptron
+where the perceptron does not use a fixed
+$k$ but chooses the neighbour's influence
+smoothly according to the kernel.
+
+The KNN classifier can thus for example
+not capture global trends and depends on
+all data, not only wrongly classified samples.
+
+Formally, the prediction is defined as
+\begin{equation*}
+    y = sign\left(
+        \sum_{i=1}^n{y_i \cdot
+            [\text{$\vec{x}_i$ among $k$ nearest neighbours of $\vec{x}$}]
+        }
+    \right)
+\end{equation*}

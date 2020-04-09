@@ -1,0 +1,145 @@
+\section{Classification Metrics and Class Imbalance}
+
+\subsection{Class Imbalance}
+Generally, the positive class is assumed to be rare.
+There are multiple ways class imbalance can be mitigated:
+
+\begin{description}
+    \item[Subsampling] is removing majority class samples
+    from the data set (e.g. uniformly at random).
+    \item[Upsampling] is repeating data points from the
+    minority class, possibly with small random perturbations.
+    \item[Cost-sensitive classification] methods change
+    the loss function to consider the class distribution.
+\end{description}
+
+Downsampling results in a smaller data set, thus training
+becomes faster. However, data is wasted and information about
+the majority class may be lost.
+Upsampling makes use of all data but is slower and
+perturbations requires arbitrary choices.
+Cost-sensitive classification methods are a solution
+to those problems.
+
+In cost-sensitive classification,
+the loss $\ell(\vec{w}; \vec{x}, y)$ is replaced as
+\begin{equation*}
+    \ell_{CS} = c_y \ell(\vec{w}; \vec{x}, y)
+\end{equation*}
+where $c_{+}, c_{-}$ (in the binary case) control the tradeoff.
+
+In the case of perceptron and SVM, the constants change the
+slope of the loss.
+They also scale the gradient.
+
+In the case of binary classification, specifying
+$c_{+}$ and $c_{-}$ is equivalent to specifying
+$\alpha = \frac{c_{+}}{c_{-}}$ and using
+$c_{+}' = \alpha, c_{-} = 1$.
+
+Instead of using a cost-sensitive classifier,
+one can also use a single classifier and vary the
+\emph{classification threshold} $\tau$
+($y = sign(\vec{w}^T \vec{x} - \tau$).
+This is similar to training multiple classifiers with
+different cost-sensitive parameters, but has lower
+computational cost.
+However, optimising the cost-sensitive loss should lead to better results.
+
+
+\subsection{Classification Metrics}
+\begin{table}[h]
+\begin{tabular}{lllll}
+ & \multicolumn{3}{c}{True label}                                                                &      \\ \cline{3-4}
+\multirow{3}{*}{Predicted label} & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{Positive} & \multicolumn{1}{l|}{Negative} &      \\ \cline{2-4}
+                                 & \multicolumn{1}{l|}{Positive} & \multicolumn{1}{l|}{TP}       & \multicolumn{1}{l|}{FP}       & $\Sigma = p_{+}$ \\ \cline{2-4}
+                                 & \multicolumn{1}{l|}{Negative} & \multicolumn{1}{l|}{FN}       & \multicolumn{1}{l|}{TN}       & $\Sigma = p_{-}$ \\ \cline{2-4}
+                                 &                               & $\Sigma = n_{+}$              & $\Sigma = n_{-}$ &     
+\end{tabular}
+\end{table}
+
+A confusion matrix is a generalisation of the
+table to $c$ classes where the columns are
+the true class, the rows the predicted classes,
+and the fields contain the counts.
+
+Let $n$ be the total number of samples.
+$n = p_{+} + p_{-} = n_{+} + n_{-}$.
+Everything containing $n$ refers to the true data,
+everything containing $p$ to the predictions.
+
+General metrics are
+\begin{description}
+    \item[Accuracy]: \begin{equation*}
+        \frac{TP + TN}{n}
+    \end{equation*}
+    \item[Precision]: \begin{equation*}
+        \frac{TP}{TP + FP} = \frac{TP}{p_{+}}
+    \end{equation*}
+    \item[Recall / Sensitivity / TPR]: \begin{equation*}
+        \frac{TP}{TP + FN} = \frac{TP}{n_{+}}
+    \end{equation*}
+    \item[Specificity / TNR]: \begin{equation*}
+        \frac{TN}{FP + TN} = \frac{TN}{n_{-}}
+    \end{equation*}
+    \item[F1 Score]: \begin{equation*}
+        \frac{2TP}{2TP + FP + FN} = \frac{2}{\frac{1}{prec} + \frac{1}{rec}} = 2 \cdot \frac{prec \cdot rec}{prec + rec}
+    \end{equation*}
+    \item[$F_\beta$ Score]: \begin{equation*}
+        (1 + \beta^2) \cdot \frac{prec \cdot rec}{\beta^2 prec + rec}
+    \end{equation*}
+\end{description}
+The F1 score is the
+harmonic mean between precision and recall.
+Precision and recall should not be averaged!
+The $F_\beta$ score is a generalisation of the
+F1 score.
+
+TODO: Micro and macro averaging of F-scores.
+
+TODO: Cross-entropy loss.
+
+In the \emph{precision recall curve},
+recall is used for the x-axis, precision for the y-axis.
+Being in the top-right corner is better.
+
+More metrics are
+\begin{description}
+    \item[True positive rate (TPR)]: \begin{equation*}
+        \frac{TP}{TP + FN} = \frac{TP}{n_{+}} = recall
+    \end{equation*}
+    \item[False positive rate (FPR)]: \begin{equation*}
+        \frac{FP}{TN + FP} = \frac{FP}{n_{-}}
+    \end{equation*}
+    \item[True negative rate (TNR)]: \begin{equation*}
+        \frac{TN}{FP + TN} = \frac{TN}{n_{-}} = specificity
+    \end{equation*}
+\end{description}
+
+Suppose class $+$ is predicted with probability $p$.
+Then, $\mathbb{E}[TPR] = \mathbb{E}[FPR] = p$.
+Thus, TPR and FPR establish a baseline:
+If we predict labels at random with probability $p$,
+the expected TPR and FPR are $p$.
+
+The \emph{Receiver Operator Characteristic (ROC) Curve}
+uses the FPR as the x-axis, TPR as the y-axis.
+Being on the line with slope $1$ corresponds to random
+guessing. Being closer to the bottom right corner is worse
+than random guessing, being closer to the top left corner
+is better.
+
+\begin{theorem}
+    Algorithm 1 dominates algorithm 2 in terms of the
+    ROC Curve if and only if
+    algorithm 1 dominates algorithm 2 in terms of the
+    Precision Recall Curve.
+    
+    One algorithm dominates the other if its curve
+    is strictly above the other curve.
+\end{theorem}
+
+The \emph{Area under the Curve (AUC)} describes the
+area under the Precision Recall / ROC curve.
+Thus, for ROC, $AUC = \frac{1}{2}$ corresponds to random
+guessing, $AUC = 1$ is ideal.
