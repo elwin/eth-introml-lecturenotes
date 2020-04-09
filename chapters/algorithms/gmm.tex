@@ -477,7 +477,7 @@ as a function of $\theta$,
 written as $Q(\theta; \Tilde{\theta})$, is
 \begin{align*}
     Q(\theta; \Tilde{\theta}) &=
-    \mathbb{E}_{z_{1:n}}[
+    \Exp_{z_{1:n}}[
         \log{P(\vec{x}_{1:n}, z_{1:n} \mid \theta)} \mid \vec{x}_{1:n}, \Tilde{\theta}
     ] \\
     &= \sum_{z_{1:n}}{
@@ -498,19 +498,19 @@ In the M-step, it is maximised:
 $Q(\theta; \theta^{(t-1)})$ can be simplified:
 \begin{align*}
         Q(\theta; \theta^{(t-1)}) &=
-    \mathbb{E}_{z_{1:n}}\left[
+    \Exp_{z_{1:n}}\left[
         \log{P(\vec{x}_{1:n}, z_{1:n} \mid \theta)} \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right] \\
-    &\overset{iid}{=} \mathbb{E}_{z_{1:n}}\left[
+    &\overset{iid}{=} \Exp_{z_{1:n}}\left[
         \sum_{i=1}^n{
         \log{P(\vec{x}_i, z_i \mid \theta)} \mid \vec{x}_{1:n}, \theta^{(t-1)}
         }
     \right] \\
-    &= \sum_{i=1}^n{ \mathbb{E}_{z_{1:n}}\left[
+    &= \sum_{i=1}^n{ \Exp_{z_{1:n}}\left[
         \log{P(\vec{x}_i, z_i \mid \theta)} \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right]
     } \\
-    &= \sum_{i=1}^n{ \mathbb{E}_{z_i}\left[
+    &= \sum_{i=1}^n{ \Exp_{z_i}\left[
         \log{P(\vec{x}_i, z_i \mid \theta)} \mid \vec{x}_i, \theta^{(t-1)}
     \right]
     } \\
@@ -578,27 +578,27 @@ do not change monotonicity.
 Thus, applying both functions to
 $P(\vec{x}_{1:n} \mid \theta)$ gives
 \begin{align*}
-    & \mathbb{E}_{z_{1:n}}\left[
+    & \Exp_{z_{1:n}}\left[
         \log{P(\vec{x}_{1:n} \mid \theta)}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right] \\
-    &= \mathbb{E}_{z_{1:n}}\left[
+    &= \Exp_{z_{1:n}}\left[
         \log{\frac{P(\vec{x}_{1:n}, z_{1:n} \mid \theta)}{P(z_{1:n} \mid \vec{x}_{1:n}, \theta)}}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right] \\
-    &= \mathbb{E}_{z_{1:n}}\left[
+    &= \Exp_{z_{1:n}}\left[
         \log{P(\vec{x}_{1:n}, z_{1:n} \mid \theta)} - \log{P(z_{1:n} \mid \vec{x}_{1:n}, \theta)}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right] \\
     &= \underbrace{
-    \mathbb{E}_{z_{1:n}}\left[
+    \Exp_{z_{1:n}}\left[
         \log{P(\vec{x}_{1:n}, z_{1:n} \mid \theta)}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right]
     }_{Q(\theta; \theta^{(t-1)})}
     -
     \underbrace{
-    \mathbb{E}_{z_{1:n}}\left[
+    \Exp_{z_{1:n}}\left[
         \log{P(z_{1:n} \mid \vec{x}_{1:n}, \theta)}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right]
@@ -619,17 +619,17 @@ we take $\theta^{(t)} = \arg\max_\theta{Q(\theta; \theta^{(t-1)})}$.
 It remains to show that $f(\theta^{(t)}) \leq f(\theta^{(t-1)})$,
 i.e.
 \begin{align*}
-    & \mathbb{E}_{z_{1:n}}\left[
+    & \Exp_{z_{1:n}}\left[
         \log{P(z_{1:n} \mid \vec{x}_{1:n}, \theta^{(t)})}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right]
     \leq
-    \mathbb{E}_{z_{1:n}}\left[
+    \Exp_{z_{1:n}}\left[
         \log{P(z_{1:n} \mid \vec{x}_{1:n}, \theta^{(t - 1)})}
         \mid \vec{x}_{1:n}, \theta^{(t-1)}
     \right] \\
     &\Leftrightarrow
-    \mathbb{E}_{z_{1:n}}\left[
+    \Exp_{z_{1:n}}\left[
         \log{P(z_{1:n} \mid \vec{x}_{1:n}, \theta^{(t - 1)})}
         -
         \log{P(z_{1:n} \mid \vec{x}_{1:n}, \theta^{(t)})}
@@ -637,7 +637,7 @@ i.e.
     \right]
     \geq 0 \\
     &\Leftrightarrow
-    \mathbb{E}_{z_{1:n}}\left[
+    \Exp_{z_{1:n}}\left[
         \log{
         \frac{P(z_{1:n} \mid \vec{x}_{1:n}, \theta^{(t - 1)})}{P(z_{1:n} \mid \vec{x}_{1:n}, \theta^{(t)})}
         }
@@ -661,7 +661,7 @@ This holds because the KL-divergence is non-negative.
 The \emph{Kullback-Leibler divergence} $KL(p || q)$
 for two distributions $p, q$ is defined as
 \begin{equation*}
-    KL(p || q) = \mathbb{E}_{\vec{x} \sim p}\left[
+    KL(p || q) = \Exp_{\vec{x} \sim p}\left[
         \log{\frac{p(\vec{x})}{q(\vec{x})}}
     \right]
     = \begin{cases}
@@ -710,7 +710,7 @@ A uniform distribution has the highest entropy.
 \subsubsection{Jensen’s Inequality}
 If $f$ is a convex function, \emph{Jensen's inequality} is
 \begin{equation*}
-    f(\mathbb{E}[X]) \leq \mathbb{E}[f(x)]
+    f(\Exp[X]) \leq \Exp[f(x)]
 \end{equation*}
 If $X$ is constant, this is equal.
 If $f$ is a concave function,

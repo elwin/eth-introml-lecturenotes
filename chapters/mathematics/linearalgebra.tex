@@ -1,14 +1,14 @@
 \section{Linear Algebra}
 
 Let $V$ be a $n$-dimensional vector space
-with an inner product $\langle\cdot,\cdot\rangle : V \times V \to \mathbb{R}$
+with an inner product $\langle\cdot,\cdot\rangle : V \times V \to \R$
 and an ordered basis $B = (b_1, \dotsc, b_n)$ of $V$.
 Then, $\langle x, y \rangle = \hat{x}^T A \hat{y}$ where
 $A_{ij} := \langle b_i, b_j \rangle$ and $\hat{x}, \hat{y}$ are the coordinates
 of $x$ and $y$ with respect to $B$.
 Therefore, the inner product is uniquely determined through $A$.
 
-A symmetric matrix $A \in \mathbb{R}^{n \times n}$ which satisfies
+A symmetric matrix $A \in \R^{n \times n}$ which satisfies
 \begin{equation*}
     \forall x \in V \setminus \{0\} : x^T A x > 0
 \end{equation*}
@@ -25,8 +25,8 @@ Let $A$ be a real symmetric matrix.
     \item $A$ can be decomposed as $A = L L^T$.
 \end{itemize}
 
-Thus, $\langle\cdot,\cdot\rangle : V \times V \to \mathbb{R}$ is an inner product if and only if
-there exists a symmetric, positive definite matrix $A \in \mathbb{R}^{n \times n}$ so that
+Thus, $\langle\cdot,\cdot\rangle : V \times V \to \R$ is an inner product if and only if
+there exists a symmetric, positive definite matrix $A \in \R^{n \times n}$ so that
 $\langle x, y \rangle = \hat{x}^T A \hat{y}$.
 
 The induced norm ($\norm{x} = \langle x, x \rangle$) satisfies the Cauchy-Schwarz inequality:
@@ -41,7 +41,7 @@ Transformations by orthogonal matrices preserve distances and angles.
 
 TODO: Orthogonal complements.
 
-An inner product between two functions $u, v : \mathbb{R} \to \mathbb{R}$ can be defined as the integral
+An inner product between two functions $u, v : \R \to \R$ can be defined as the integral
 $\langle u, v \rangle := \int_a^b{u(x) v(x) dx}$ for lower and upper limits $a, b < \infty$ respectively.
 Inner products on functions may diverge, i.e. have infinite value.
 
@@ -85,7 +85,7 @@ the characteristic polynomial $det(A - \lambda I)$.
 The geometric multiplicity of $\lambda_i$ is the dimensionality of the eigenspace $E_{\lambda_i}$.
 The geometric multiplicity must always be at least one and can not exceed the algebraic multiplicity.
 
-Let $A \in \mathbb{R}^{m \times n}$.
+Let $A \in \R^{m \times n}$.
 Then $S = A^T A$ is always symmetric, positive semi-definite. If $rk(A) = n$ then $S$ is positive definite.
 
 The determinant of a matrix is the product of its eigenvalues, and the trace is the sum of its eigenvalues.
@@ -100,27 +100,27 @@ $l_{ii} = \sqrt{a_{ii} - \sum_{j = 1}^{i - 1}{l_{ij}^2}}$.
 The elements below the diagonal are also calculated in a recursive way.
 
 Eigendecomposition:
-A square matrix $A \in \mathbb{R}^{n \times n}$ can be factored into
+A square matrix $A \in \R^{n \times n}$ can be factored into
 $A = P D P^{-1}$
-if and only if the eigenvectors of $A$ form a basis of $\mathbb{R}^n$.
+if and only if the eigenvectors of $A$ form a basis of $\R^n$.
 Then, $D$ is a diagonal matrix whose diagonal entries
 are the eigenvalues of $A$ and the columns of $P$
 are the corresponding eigenvectors.
 
 A symmetric matrix $S$ can always be diagonalised and all eigenvalues are real.
-Furthermore, there exists an ONB of eigenvectors of $\mathbb{R}^n$, resulting in the diagnoalisation $D = P^T A P$.
+Furthermore, there exists an ONB of eigenvectors of $\R^n$, resulting in the diagnoalisation $D = P^T A P$.
 
-Let $A \in \mathbb{R}^{m \times n}$ be a matrix of rank $r \in [0, \min\{m, n\}]$.
+Let $A \in \R^{m \times n}$ be a matrix of rank $r \in [0, \min\{m, n\}]$.
 The SVD of $A$ is a decomposition of the form
 \begin{equation*}
     A = U \Sigma V^T
 \end{equation*}
-with $U \in \mathbb{R}^{m \times m}$, $V \in \mathbb{R}^{n \times n}$ and $\Sigma \in \mathbb{R}^{m \times n}$.
+with $U \in \R^{m \times m}$, $V \in \R^{n \times n}$ and $\Sigma \in \R^{m \times n}$.
 Furthermore, $\Sigma_{ii} \geq 0$ and $\Sigma_{ij} = 0, i \neq j$.
 The diagonal entries of $\Sigma$, $\sigma_i, i = 1, \dotsc, r$, are called the singular values.
 By convention, the singular values are ordered in descending order.
 
-The SVD can be interpreted as a mapping $\Phi : \mathbb{R}^n \to \mathbb{R}^m$.
+The SVD can be interpreted as a mapping $\Phi : \R^n \to \R^m$.
 First, $V^T$ performs a basis change by rotation in the source domain.
 Then, $\Sigma$ scales coordinates in the new basis by the singular values and adds/deletes dimensions.
 Finally, $U$ performs another basis change by rotation in the codomain.
@@ -143,7 +143,7 @@ The SVD of a matrix $A$ is constructed as follows:
     \item If $m > r$ then $U$ has to be extended to an ONB with arbitrary vectors.
 \end{enumerate}
 
-Let $\vec{x} \in \mathbb{R}^n$ be a vector and $p \in (1, \infty)$.
+Let $\vec{x} \in \R^n$ be a vector and $p \in (1, \infty)$.
 The $p$-norm of $\vec{x}$ is
 \begin{equation*}
     \norm{\vec{x}}_p = (\sum_{i = 1}^n{|x_i|^p})^\frac{1}{p}
@@ -170,8 +170,8 @@ If we only sum up to $k \leq r$, this is called the rank-$k$-approximation of $A
 \end{equation*}
 with $rk(\hat{A}) = k$.
 
-Let $A \in \mathbb{R}^{m \times n}$ of rank $r$ and
-$B \in \mathbb{R}^{m \times n}$ of rank $k$.
+Let $A \in \R^{m \times n}$ of rank $r$ and
+$B \in \R^{m \times n}$ of rank $k$.
 Then, for any $k \leq r$,
 $\hat{A}(k) = \arg\min_{rk(B) = k}\norm{A - B}_2$ and
 $\norm{A - \hat{A}}_2 = \sigma_{k + 1}$.

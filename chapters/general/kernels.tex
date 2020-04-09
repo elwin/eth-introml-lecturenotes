@@ -46,7 +46,7 @@ inner products by kernels:
 Let $\mathcal{X}$ be a data space.
 
 A kernel is a function
-$k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$
+$k : \mathcal{X} \times \mathcal{X} \to \R$
 corresponding to some inner product
 $k(\vec{x}, \vec{x}') = \langle \phi(\vec{x}), \phi(\vec{x}') \rangle$
 in some suitable space,
@@ -69,7 +69,7 @@ e.g. $\phi(\vec{x}) = 0$.
 Alternatively, a symmetric function $k : \mathcal{X} \to \mathcal{X}$
 is positive semi-definite if
 $\forall n > 0$,
-$\forall (a_1, \dotsc, a_n) \in \mathbb{R}^n$,
+$\forall (a_1, \dotsc, a_n) \in \R^n$,
 $\forall (x_1, \dotsc, x_n) \in \mathcal{X}^n$,
 \begin{equation*}
     \sum_{i=1}^n{
@@ -80,16 +80,16 @@ $\forall (x_1, \dotsc, x_n) \in \mathcal{X}^n$,
     \geq 0
 \end{equation*}
 
-A symmetric matrix $\vec{M} \in \mathbb{R}^{n \times n}$
+A symmetric matrix $\vec{M} \in \R^{n \times n}$
 is positive semi-definite
 \begin{equation*}
-    \Leftrightarrow \forall \vec{x} \in \mathbb{R}^n:
+    \Leftrightarrow \forall \vec{x} \in \R^n:
         \vec{x}^T \vec{M} \vec{x} \geq 0
     \Leftrightarrow
         \text{All Eigenvalues of $\vec{M}$ are} \geq 0
 \end{equation*}
 
-Let $k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$
+Let $k : \mathcal{X} \times \mathcal{X} \to \R$
 be a kernel and $S = \{\vec{x}_1, \dotsc, \vec{x}_n\} \subseteq \mathcal{X}$
 be a finite data subset.
 Then, the \emph{kernel (Gram) matrix} is
@@ -115,9 +115,9 @@ where
 The kernel (gram) matrix is positive semi-definite.
 
 Conversely, from every symmetric positive semi-definite
-matrix $\vec{K} \in \mathbb{R}^{n \times n}$,
+matrix $\vec{K} \in \R^{n \times n}$,
 we can construct a feature map
-$\phi : \mathcal{X} \to \mathbb{R}^n$ such that
+$\phi : \mathcal{X} \to \R^n$ such that
 $\vec{K}_{i,j} = \phi(i)^T \phi(j)$:
 \begin{equation*}
     \vec{K} = \vec{U}\vec{D}\vec{U}^T
@@ -138,8 +138,8 @@ $\vec{K}_{i,j} = \phi(i)^T \phi(j)$:
 
 \begin{theorem}[Mercer's Theorem]
     Let $\mathcal{X}$ be a compact subset of
-    $\mathbb{R}^d$ and
-    $k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$
+    $\R^d$ and
+    $k : \mathcal{X} \times \mathcal{X} \to \R$
     a kernel function.
     
     Then, $k$ can be expanded in a uniformly convergent
@@ -165,8 +165,8 @@ and $\phi(\cdot)$ the feature map.
 \begin{equation*}
     k(\vec{x}, \vec{x}') = \vec{x}^T \vec{x}'
 \end{equation*}
-$\mathcal{X} = \mathbb{R}^n$,
-$\mathcal{H} = \mathbb{R}^n$,
+$\mathcal{X} = \R^n$,
+$\mathcal{H} = \R^n$,
 $\phi(\vec{x}) = \vec{x}$.
 
 \subsubsection{Monomials of Degree $m$}
@@ -181,8 +181,8 @@ while the kernel is of order $\mathcal{O}(d)$.
 \begin{equation*}
     k(\vec{x}, \vec{x}') = (1 + \vec{x}^T \vec{x}')^m
 \end{equation*}
-$\mathcal{X} = \mathbb{R}^n$,
-$\mathcal{H} = \mathbb{R}^{\binom{n+m}{m}}$.
+$\mathcal{X} = \R^n$,
+$\mathcal{H} = \R^{\binom{n+m}{m}}$.
 
 The number of monomials up to degree $m$ is
 $\mathcal{O}(\binom{d+m}{m})$.
@@ -193,8 +193,8 @@ $\mathcal{O}(\binom{d+m}{m})$.
         -\frac{\norm{\vec{x} - \vec{x}'}_2^2}{h^2}
     \right)
 \end{equation*}
-$\mathcal{X} = \mathbb{R}^n$,
-$\mathcal{H} = \mathbb{R}^\infty$.
+$\mathcal{X} = \R^n$,
+$\mathcal{H} = \R^\infty$.
 
 $h$ is the bandwitdh/lengthscale parameter.
 The smaller $h$, the more influence do samples have.
@@ -229,9 +229,9 @@ symmetric, positive semi-definite.
         k_j(x_j, x_j')
     }
 \end{equation*}
-where $x \in \mathbb{R}^d$,
-$k : \mathbb{R}^d \times \mathbb{R}^d \to \mathbb{R}$ and
-$k_j : \mathbb{R} \times \mathbb{R} \to \mathbb{R}$
+where $x \in \R^d$,
+$k : \R^d \times \R^d \to \R$ and
+$k_j : \R \times \R \to \R$
 are valid kernels.
 
 \subsubsection{Semi-Parametric Regression Kernel}
@@ -249,11 +249,11 @@ kernels can be used:
 
 
 \subsection{Kernel Engineering}
-Let $k_1 : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$
-and $k_2 : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$
+Let $k_1 : \mathcal{X} \times \mathcal{X} \to \R$
+and $k_2 : \mathcal{X} \times \mathcal{X} \to \R$
 be two kernels,
 $c > 0$ be a scalar,
-$f : \mathbb{R} \to \mathbb{R}$
+$f : \R \to \R$
 be either a polynomial with positive coefficients or the
 exponential function and
 $\mathcal{V} : \mathcal{Z} \to \mathcal{X}$ be a mapping.

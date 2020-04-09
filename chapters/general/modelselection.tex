@@ -31,7 +31,7 @@ The population risk/true risk/expected error under $P$ is
 \begin{equation*}
     R(\vec{w})
     = \int{P(\vec{x}, y)\ell(y, \hat{y}) d\vec{x} dy}
-    = \mathbb{E}_{\vec{x}, y}[\ell(y, \hat{y})]
+    = \Exp_{\vec{x}, y}[\ell(y, \hat{y})]
 \end{equation*}
 
 The true risk on a sample data set $D$ is
@@ -69,8 +69,8 @@ with increasing amounts of data.
 
 In general, it holds that
 \begin{equation*}
-    \mathbb{E}_D[\hat{R}_D(\hat{\vec{w}}_D)] \leq
-    \mathbb{E}_D[R(\hat{\vec{w}}_D)]
+    \Exp_D[\hat{R}_D(\hat{\vec{w}}_D)] \leq
+    \Exp_D[R(\hat{\vec{w}}_D)]
 \end{equation*}
 Thus, when evaluating performance on the training data,
 an overly optimistic estimate is achieved.
@@ -90,8 +90,8 @@ and evaluation on the test set
 \end{equation*}
 Then,
 \begin{equation*}
-    \mathbb{E}_{D_{train}, D_{test}}[\hat{R}_{test}(\hat{\vec{w}}_{D_{train}})] =
-    \mathbb{E}_{D_{train}}[R(\hat{\vec{w}}_{D_{train}})]
+    \Exp_{D_{train}, D_{test}}[\hat{R}_{test}(\hat{\vec{w}}_{D_{train}})] =
+    \Exp_{D_{train}}[R(\hat{\vec{w}}_{D_{train}})]
 \end{equation*}
 
 The test error itself is random.

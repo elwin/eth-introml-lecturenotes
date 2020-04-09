@@ -43,10 +43,10 @@ thus a discriminator network is trained to do so.
 This is called \emph{discriminative learning}.
 
 Now, two neural networks are trained simultaneously.
-The \emph{generator} network $G : \mathbb{R}^m \to \mathbb{R}^d$
+The \emph{generator} network $G : \R^m \to \R^d$
 tries to generate realistic examples;
 the \emph{discriminator} network
-$D : \mathbb{R}^d \to [0, 1]$
+$D : \R^d \to [0, 1]$
 tries to distinguish real and generated samples.
 
 The discriminator wants
@@ -64,9 +64,9 @@ The generator wants
 This results in the following \emph{minimax} game:
 \begin{equation*}
     \min_G{\max_D{
-        \mathbb{E}_{\vec{x} \sim \text{Data}}[\log{D(\vec{x})}]
+        \Exp_{\vec{x} \sim \text{Data}}[\log{D(\vec{x})}]
         +
-        \mathbb{E}_{\vec{z} \sim \vec{Z}}[\log{(1 - D(G(\vec{z}))}]
+        \Exp_{\vec{z} \sim \vec{Z}}[\log{(1 - D(G(\vec{z}))}]
     }}
 \end{equation*}
 Here, the logarithm was used,
@@ -83,9 +83,9 @@ and optimise over weights:
 \begin{equation*}
     \min_{\vec{w}_G}{\max_{\vec{w}_D}{
     \underbrace{
-        \mathbb{E}_{\vec{x} \sim \text{Data}}[\log{D(\vec{x}; \vec{w}_D)}]
+        \Exp_{\vec{x} \sim \text{Data}}[\log{D(\vec{x}; \vec{w}_D)}]
         +
-        \mathbb{E}_{\vec{z} \sim \vec{Z}}[\log{(1 - D(G(\vec{z}; \vec{w}_G); \vec{w}_D)}]
+        \Exp_{\vec{z} \sim \vec{Z}}[\log{(1 - D(G(\vec{z}; \vec{w}_G); \vec{w}_D)}]
     }_{M(\vec{w}_G, \vec{w}_D)}
     }}
 \end{equation*}

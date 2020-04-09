@@ -26,7 +26,7 @@ The following are the differentiation rules for univariate functions:
 
 TODO: Some common derivatives.
 
-For a function $f : \mathbb{R}^n \to \mathbb{R}, x \mapsto f(x), x \in \mathbb{R}^n$
+For a function $f : \R^n \to \R, x \mapsto f(x), x \in \R^n$
 of $n$ variables, the $i$-th partial derivative is defined as
 \begin{equation*}
     \frac{\partial f}{\partial x_i} = \frac{f(x_1, \dotsc, x_{i - 1}, x_i + h, x_{i + 1}, \dotsc, x_n}{h}
@@ -34,14 +34,14 @@ of $n$ variables, the $i$-th partial derivative is defined as
 
 The gradient/Jacobian is a row vector containing the collection of all partial derivatives, i.e.
 \begin{equation*}
-    \nabla_x{f} = grad f = \frac{d f}{d x} = \left[ \frac{\partial f}{\partial x_1}, \dotsc, \frac{\partial f}{\partial x_n} \right] \in \mathbb{R}^{1 \times n}
+    \nabla_x{f} = grad f = \frac{d f}{d x} = \left[ \frac{\partial f}{\partial x_1}, \dotsc, \frac{\partial f}{\partial x_n} \right] \in \R^{1 \times n}
 \end{equation*}
 
 Remark: Gradients are themselves $n$-ary functions, not values!
 The gradiet is always orthogonal to the contour line
 $\{x : f(x) = f(x_0)\}$.
 
-The following are the general differentiation rules for functions mapping to $\mathbb{R}$.
+The following are the general differentiation rules for functions mapping to $\R$.
 Note that now, vectors and matrices are involved, thus multiplications are matrix multiplications.
 \begin{equation*}
     \frac{\partial}{\partial x} (f(x) \cdot g(x)) 
@@ -59,7 +59,7 @@ Note that now, vectors and matrices are involved, thus multiplications are matri
 
 TODO: Chain rule stuff from MML Book
 
-For a vector-valued function $f : \mathbb{R}^n \to \mathbb{R}^m, m > 1$
+For a vector-valued function $f : \R^n \to \R^m, m > 1$
 and a vector $x = [x_1, \dotsc, x_n]^T$,
 the function can be viewed as a vector of functions:
 \begin{equation*}
@@ -69,7 +69,7 @@ the function can be viewed as a vector of functions:
     \vdots \\
     f_m(x)
     \end{bmatrix}
-    \in \mathbb{R}^m
+    \in \R^m
 \end{equation*}.
 The derivation for each $f_i$ is then as before, leading to the partial derivative
 \begin{equation*}
@@ -79,12 +79,12 @@ The derivation for each $f_i$ is then as before, leading to the partial derivati
     \vdots \\
     \frac{\partial f_m}{\partial x_i}
     \end{bmatrix}
-    \in \mathbb{R}^m
+    \in \R^m
 \end{equation*}
 
 The Jacobian is the collection of all first-order derivatives of a vector-valued function
-$f : \mathbb{R}^n \to \mathbb{R}^m$.
-It is a matrix $J \in \mathbb{R}^{m \times n}$ defined as
+$f : \R^n \to \R^m$.
+It is a matrix $J \in \R^{m \times n}$ defined as
 \begin{equation*}
     J = \nabla_x f = \frac{d f(x)}{d x} =
     \begin{bmatrix}
@@ -95,12 +95,12 @@ It is a matrix $J \in \mathbb{R}^{m \times n}$ defined as
 \end{equation*}
 and thus $J(i, j) = \frac{\partial f_i}{\partial x_j}$.
 
-For a matrix $A \in \mathbb{R}^{m \times n}$ and a corresponding function $f(x) = Ax$,
+For a matrix $A \in \R^{m \times n}$ and a corresponding function $f(x) = Ax$,
 the Jacobian of $f$ is equal to $A$,
 i.e. $\frac{d f}{d x} = A$.
 
 To compute gradients of matrix-valued functions, there are 2 approaches.
-Let $f : \mathbb{R}^{m \times n} \to \mathbb{R}^{p \times q}$ be a matrix-valued function.
+Let $f : \R^{m \times n} \to \R^{p \times q}$ be a matrix-valued function.
 We can either calculate the gradient directly, resulting in a 4-dimensional Jacobian tensor
 with shape $(m \times n) \times (p \times q)$ with entries
 $J_{ijkl} = \frac{\partial A_{ij}}{\partial B_{kl}}$.
@@ -158,5 +158,5 @@ The Hessian matrix is in many cases symmetric and defined as
     \end{bmatrix}
 \end{equation*}
 
-For a vector field $f : \mathbb{R}^{n} \to \mathbb{R}^m$,
+For a vector field $f : \R^{n} \to \R^m$,
 the Hessian is a ($m \times n \times n$)-tensor.

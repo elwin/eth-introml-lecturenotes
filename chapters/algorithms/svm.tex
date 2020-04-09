@@ -78,12 +78,12 @@ exactly zero and thus results in automatic feature selection.
 \subsection{Geometric Interpretation}
 TODO: Honestly, just read tutorial 4.
 
-A \emph{hyperplane} in $\mathbb{R}^d$ is the
+A \emph{hyperplane} in $\R^d$ is the
 set of vectors fulfilling
 $\langle \vec{w}, \vec{x} \rangle = 0$.
 It is a $d-1$ dimensional subspace.
-For $b \in \mathbb{R}$, the set
-$\{\vec{x} \in \mathbb{R}^d \mid \langle \vec{w}, \vec{x} \rangle = b\}$
+For $b \in \R$, the set
+$\{\vec{x} \in \R^d \mid \langle \vec{w}, \vec{x} \rangle = b\}$
 is a \emph{translated/affine hyperplane}.
 Increasing $b$ moves the hyperplane towards
 the direction of $\vec{w}$ and vice versa.
@@ -93,7 +93,7 @@ onto a hyperplane is given by $\hat{\vec{z}} = \vec{z} + t \vec{w}$
 where $t = \frac{b - \langle \vec{w}, \vec{z} \rangle}{\norm{\vec{w}}^2}$.
 
 The \emph{orthogonal distance} of $\vec{z}$ to a
-hyperplane $H = \{\vec{x} \in \mathbb{R}^d \mid \langle \vec{w}, \vec{x} \rangle = 0\}$
+hyperplane $H = \{\vec{x} \in \R^d \mid \langle \vec{w}, \vec{x} \rangle = 0\}$
 is given by
 \begin{equation*}
     \frac{| \langle \vec{w}, \vec{z} \rangle |}{\norm{\vec{w}}^2}

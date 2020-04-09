@@ -8,7 +8,7 @@ Euclidean space or with distances specified by a metric/kernel.
 i.e. it maintains cluster models and infers membership.
 
 Each cluster is represented by a single
-\emph{cluster centroid} $\vec{\mu}_i \in \mathbb{R}^d$.
+\emph{cluster centroid} $\vec{\mu}_i \in \R^d$.
 A point is assigned to its closest cluster centroid.
 This induces a Voronoi partition of the input space.
 Therefore, decision boundaries are linear and the problem
@@ -16,9 +16,9 @@ can be interpreted as linear unsupervised classification.
 
 \subsection{k-means Problem}
 Points are represented in Euclidean space:
-$\vec{x}_i \in \mathbb{R}^d$.
+$\vec{x}_i \in \R^d$.
 Clusters are represented by their centres:
-$\vec{\mu}_j \in \mathbb{R}^d$.
+$\vec{\mu}_j \in \R^d$.
 Each point is assigned to its closest centre.
 
 The goal is to pick centres to minimise the average squared
@@ -123,7 +123,7 @@ to combat both problems.
 The expected cost is $\mathcal{O}(\log k)$ times that
 of the optimal solution, i.e.
 \begin{equation*}
-    \mathbb{E}[\hat{R}(\vec{\mu}^{(0)})]
+    \Exp[\hat{R}(\vec{\mu}^{(0)})]
     \leq \mathcal{O}(\log k) \cdot \min_{\vec{\mu}}{\hat{R}(\vec{\mu})}
 \end{equation*}
 

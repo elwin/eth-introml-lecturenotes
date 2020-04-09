@@ -1,9 +1,9 @@
 \section{Dimensionality Reduction}
 The basic challenge is:
 Given a data set
-$D = \{\vec{x}_1, \dotsc, \vec{x}_n\} \in \mathbb{R}^d$,
+$D = \{\vec{x}_1, \dotsc, \vec{x}_n\} \in \R^d$,
 find an \emph{embedding}
-$\vec{z}_1, \dotsc, \vec{z}_n \in \mathbb{R}^k$
+$\vec{z}_1, \dotsc, \vec{z}_n \in \R^k$
 with $k < d$.
 
 The embedding may then be used for visualisation,
@@ -11,12 +11,12 @@ regularisation (model selection),
 unsupervised feature discovery,
 and more.
 
-Typically, a mapping $f : \mathbb{R}^d \to \mathbb{R}^k$
+Typically, a mapping $f : \R^d \to \R^k$
 with $k \ll d$ is obtained.
 
 In \emph{linear dimensionality reduction},
 the mapping is of the form
-$f(\vec{x}) = \vec{A}\vec{x}, \vec{A} \in \mathbb{R}^{k \times d}$.
+$f(\vec{x}) = \vec{A}\vec{x}, \vec{A} \in \R^{k \times d}$.
 In \emph{nonlinear dimensionality reduction},
 other mappings (parametric or non-parametric) are used.
 

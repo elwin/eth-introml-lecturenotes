@@ -8,7 +8,7 @@ defined according to some loss function
 $\ell$ and given as
 \begin{equation*}
     R(h) = \int{P(\vec{x}, y) \ell(y; h(\vec{x})) d\vec{x} dy}
-        = \mathbb{E}_{\vec{X}, Y}[\ell(Y; h(\vec{X})]
+        = \Exp_{\vec{X}, Y}[\ell(Y; h(\vec{X})]
 \end{equation*}
 
 The fundamental assumption is that
@@ -20,15 +20,15 @@ i.e.
 
 In least squares regression,
 the risk is
-$R(h) = \mathbb{E}_{\vec{X}, Y}[(Y - h(\vec{X}))^2]$.
+$R(h) = \Exp_{\vec{X}, Y}[(Y - h(\vec{X}))^2]$.
 Assuming the true distribution $P(\vec{X}, Y)$ is known,
 the $h$ minimising the risk is given as
 \begin{align*}
     \min_h{R(h)}
-    &= \min_h{\mathbb{E}_{\vec{X}, Y}[(Y - h(\vec{X}))^2]} \\
-    &= \min_h{\mathbb{E}_{\vec{X}}[\mathbb{E}_Y[(Y - h(\vec{x}))^2 \mid \vec{X} = \vec{x}]]} \\
-    &= \mathbb{E}_{\vec{X}}[
-        \min_{h(\vec{x})}{\mathbb{E}_Y[(Y-h(\vec{x})^2 \mid \vec{X} = \vec{x}]}
+    &= \min_h{\Exp_{\vec{X}, Y}[(Y - h(\vec{X}))^2]} \\
+    &= \min_h{\Exp_{\vec{X}}[\Exp_Y[(Y - h(\vec{x}))^2 \mid \vec{X} = \vec{x}]]} \\
+    &= \Exp_{\vec{X}}[
+        \min_{h(\vec{x})}{\Exp_Y[(Y-h(\vec{x})^2 \mid \vec{X} = \vec{x}]}
     ]
 \end{align*}
 since $h$ can be considered independently for each $\vec{x}$.
@@ -36,22 +36,22 @@ since $h$ can be considered independently for each $\vec{x}$.
 Now, for a fixed $\vec{x}$, the optimal prediction is
 \begin{equation*}
     y^*(\vec{x}) \in \arg\min_{\hat{y}}{
-        \underbrace{\mathbb{E}_Y[(\hat{y} - y)^2]}_{= \ell(\hat{y})}
+        \underbrace{\Exp_Y[(\hat{y} - y)^2]}_{= \ell(\hat{y})}
     }
 \end{equation*}
 
 This leads to
 \begin{align*}
     \frac{d}{d \hat{y}} \ell(\hat{y}) &= \int{2 (\hat{y} - y) p(y \mid \vec{x}) dy} \overset{!}{=} 0 \\
-    &\Rightarrow \underbrace{\int{\hat{y} \cdot p(y \mid \vec{x}) dy}}_{=\hat{y}} = \underbrace{\int{y \cdot p(y \mid \vec{x}) dy}}_{= \mathbb{E}[Y \mid \vec{X} = \vec{x}]} \\
-    &\Leftrightarrow \hat{y} = \mathbb{E}[Y | \vec{X} = \vec{x}]
+    &\Rightarrow \underbrace{\int{\hat{y} \cdot p(y \mid \vec{x}) dy}}_{=\hat{y}} = \underbrace{\int{y \cdot p(y \mid \vec{x}) dy}}_{= \Exp[Y \mid \vec{X} = \vec{x}]} \\
+    &\Leftrightarrow \hat{y} = \Exp[Y | \vec{X} = \vec{x}]
 \end{align*}
 
 Therefore, in least squares regression,
 the hypothesis minimising the true risk
 is given by the conditional mean
 \begin{equation*}
-    h^*(\vec{x}) = \mathbb{E}[Y \mid \vec{X} = \vec{x}]
+    h^*(\vec{x}) = \Exp[Y \mid \vec{X} = \vec{x}]
 \end{equation*}
 
 This hypothesis is called the
@@ -65,7 +65,7 @@ is to estimate the conditional distribution
 and for a test point $\vec{x}$ to
 predict the label
 \begin{equation*}
-    \hat{y} = \hat{\mathbb{E}}[Y \mid \vec{X} = \vec{x}]
+    \hat{y} = \hat{\Exp}[Y \mid \vec{X} = \vec{x}]
     = \int{y \cdot \hat{P}(y \mid \vec{X} = \vec{x}) dy}
 \end{equation*}
 
@@ -151,7 +151,7 @@ to least squares regression.
 \subsubsection{MLE for i.i.d. Gaussian noise}
 The above example holds more general.
 
-Suppose $\mathcal{H} = \{h : \mathcal{X} \to \mathbb{R}\}$
+Suppose $\mathcal{H} = \{h : \mathcal{X} \to \R\}$
 is a class of functions.
 Further assume
 \begin{equation*}
@@ -210,18 +210,18 @@ i.e. $\hat{h} = \hat{h}_D$.
 We want to chose $\mathcal{H}$ to have small bias,
 i.e. have small squared error on average:
 \begin{equation*}
-    \mathbb{E}_{\vec{X}}[
-        \underbrace{\mathbb{E}_D[\hat{h}_D(\vec{X})] - h^*(\vec{X})}_{\text{Bias}}
+    \Exp_{\vec{X}}[
+        \underbrace{\Exp_D[\hat{h}_D(\vec{X})] - h^*(\vec{X})}_{\text{Bias}}
     ]^2
 \end{equation*}
 
 The estimator itself is random and
 thus has some variance:
 \begin{equation*}
-    \mathbb{E}_{\vec{X}}[\var_D[\hat{h}_D(\vec{X})]^2]
-    = \mathbb{E}_{\vec{X}}[
-        \mathbb{E}_D[(
-            \hat{h}_D(\vec{X}) - \mathbb{E}_{D'}[\hat{h}_{D'}(\vec{X})]
+    \Exp_{\vec{X}}[\Var_D[\hat{h}_D(\vec{X})]^2]
+    = \Exp_{\vec{X}}[
+        \Exp_D[(
+            \hat{h}_D(\vec{X}) - \Exp_{D'}[\hat{h}_{D'}(\vec{X})]
         )^2]
     ]
 \end{equation*}
@@ -230,14 +230,14 @@ TODO: No idea if the variance formula is correct...
 Even if the Bayes' optimal hypothesis $h^*$ is
 known, we would still incur some error du to noise:
 \begin{equation*}
-    \mathbb{E}_{\vec{X}, Y}[
+    \Exp_{\vec{X}, Y}[
         (Y - h^*(\vec{X}))^2
     ]
 \end{equation*}
 
 Ultimately, for least squares regression it holds that
 \begin{align*}
-    \underbrace{\mathbb{E}_D[\mathbb{E}_{\vec{X}, Y}[
+    \underbrace{\Exp_D[\Exp_{\vec{X}, Y}[
         (Y - \hat{h}_D(\vec{X}))^2
     ]]}_{\text{Expected risk}}
 \end{align*}
@@ -409,7 +409,7 @@ and likelihoods (loss functions).
 \subsection{Classification}
 In classification, the risk is
 \begin{equation*}
-    R(h) = \mathbb{E}_{\vec{X}, Y}[
+    R(h) = \Exp_{\vec{X}, Y}[
         \underbrace{[Y \neq h(\vec{X})]}_\text{$1$ if $Y \neq H(\vec{X})$, $0$ otherwise}
     ]
 \end{equation*}
@@ -419,7 +419,7 @@ and $(\vec{x}_i, y_i) \sim P(\vec{X}, Y)$ iid,
 we get
 \begin{align*}
     h^*(\vec{x}) &= \arg\min_{\hat{y}}{
-        \mathbb{E}_Y[[Y \neq \hat{y}] \mid \vec{X} = \vec{x}]
+        \Exp_Y[[Y \neq \hat{y}] \mid \vec{X} = \vec{x}]
     } \\
     &= \arg\min_{\hat{y}}{
         \sum_{y=1}^c{P(Y = y \mid \vec{X} = \vec{x}) \cdot [y \neq \hat{y}] }

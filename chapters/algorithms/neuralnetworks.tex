@@ -23,8 +23,8 @@ The feature maps in neural networks are of the form
     \phi(\vec{x}, \vec{\theta})
     = \varphi(\underbrace{\vec{\theta}^T \vec{x}}_{z})
 \end{equation*}
-where $\vec{\theta} \in \mathbb{R}^d$ and
-$\varphi : \mathbb{R} \to \mathbb{R}$ is an activation function.
+where $\vec{\theta} \in \R^d$ and
+$\varphi : \R \to \R$ is an activation function.
 
 The term \emph{artificial neural networks (ANN)} /
 \emph{multi-layer Perceptrons} refers to nonlinear functions
@@ -59,7 +59,7 @@ The \emph{(logistic) Sigmoid} activation function is
     \varphi(z) = \frac{1}{1 + \exp{(-z)}}
     = \frac{\exp{(z)}}{\exp{(z)} + 1}
 \end{equation*}
-It has the range $\varphi : \mathbb{R} \to (0, 1)$
+It has the range $\varphi : \R \to (0, 1)$
 and $\varphi(0) = 0.5$.
 It behaves almost linear between some threshold,
 almost constant outside of it.
@@ -85,7 +85,7 @@ centred around zero, given as
     \varphi(z)
     = \frac{\exp{(z)} - \exp{(-z)}}{\exp{(z)} + \exp{(-z)}}
 \end{equation*}
-It has the range $\varphi : \mathbb{R} \to (-1, 1)$
+It has the range $\varphi : \R \to (-1, 1)$
 and $\varphi(0) = 0$.
 
 It holds that $\varphi(z) = - \varphi(-z)$.
@@ -217,7 +217,7 @@ respectively needs to be calculated.
         \begin{equation*}
             \nabla_{\vec{W}^{(L)}} \ell(\vec{W}; \vec{y}, \vec{x})
             = \vec{\delta}^{(L)} \vec{v}^{(L-1)^T}
-                \in \mathbb{R}^{p \times m}
+                \in \R^{p \times m}
         \end{equation*}
     \end{enumerate}
     
@@ -233,7 +233,7 @@ respectively needs to be calculated.
         \begin{equation*}
             \nabla_{\vec{W}^{(l)}} \ell(\vec{W}; \vec{y}, \vec{x})
             = \vec{\delta}^{(l)} \vec{v}^{(l-1)^T}
-            \in \mathbb{R}^{m' \times m''}        
+            \in \R^{m' \times m''}
         \end{equation*}
     \end{enumerate}
 \end{enumerate}
@@ -284,18 +284,18 @@ randomness is done.
 
 \begin{theorem}
     Let $X, Y$ be independent random variables with
-    $\mathbb{E}[X] = 0$. Then
+    $\Exp[X] = 0$. Then
     \begin{equation*}
         Var[X Y] =
         \begin{cases}
-            Var[X] \cdot Var[Y] & \text{if $\mathbb{E}[Y] = 0$} \\
-            Var[X] \cdot \mathbb{E}[Y^2] & \text{if $\mathbb{E}[Y] \neq 0$}
+            Var[X] \cdot Var[Y] & \text{if $\Exp[Y] = 0$} \\
+            Var[X] \cdot \Exp[Y^2] & \text{if $\Exp[Y] \neq 0$}
         \end{cases}
     \end{equation*}
     
     If $\varphi$ is the ReLU function and $Y$ is symmetric, then
     \begin{equation*}
-        \mathbb{E}[\varphi(Y)^2] = \frac{1}{2} Var[Y]
+        \Exp[\varphi(Y)^2] = \frac{1}{2} Var[Y]
     \end{equation*}
 \end{theorem}
 

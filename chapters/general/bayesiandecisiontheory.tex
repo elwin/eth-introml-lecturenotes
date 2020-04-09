@@ -2,7 +2,7 @@
 Let $P(y \mid \vec{x})$ be a conditional
 distribution over labels,
 $\mathcal{A}$ a \emph{set of actions},
-and $C : \mathcal{Y} \times \mathcal{A} \to \mathbb{R}$
+and $C : \mathcal{Y} \times \mathcal{A} \to \R$
 be a \emph{cost function}.
 
 \emph{Bayesian decision theory} (BDT)
@@ -12,7 +12,7 @@ pick the action which minimises the
 \begin{equation*}
     a^* =
     \arg\min_{a \in \mathcal{A}}{
-        \mathbb{E}_y[C(y, a) \mid \vec{x}]
+        \Exp_y[C(y, a) \mid \vec{x}]
     }
 \end{equation*}
 
@@ -45,7 +45,7 @@ expected cost is the most likely class:
 \begin{align*}
     a^* &=
     \arg\min_{a \in \mathcal{A}}{
-        \mathbb{E}_y[C(y, a) \mid \vec{x}]
+        \Exp_y[C(y, a) \mid \vec{x}]
     } \\
     &= \arg\max_y{\hat{P}(y \mid \vec{x})} \\
     &= sign(\vec{w}^T \vec{x})
@@ -78,12 +78,12 @@ for the input $\vec{x}$.
 We can now defined the costs of positive
 predictions as
 \begin{equation*}
-    c_+ = \mathbb{E}_y[C(y, +1) \mid \vec{x}]
+    c_+ = \Exp_y[C(y, +1) \mid \vec{x}]
     = (1 - p) \cdot c_{FP} + p \cdot 0
 \end{equation*}
 and for negative predictions as
 \begin{equation*}
-    c_- = \mathbb{E}_y[C(y, -1) \mid \vec{x}]
+    c_- = \Exp_y[C(y, -1) \mid \vec{x}]
     = (1 - p) \cdot 0 + p \cdot c_{FN}
 \end{equation*}
 
@@ -138,7 +138,7 @@ the estimated conditional distribution is
     \mathcal{N}(y ; \hat{\vec{w}}^T \vec{x}, \sigma^2)
 \end{equation*}
 the action set is
-$\mathcal{A} = \mathbb{R}$ and
+$\mathcal{A} = \R$ and
 the cost function
 $C(y, a) = (y - a)^2$.
 
@@ -147,9 +147,9 @@ expected cost is the conditional mean:
 \begin{align*}
     a^* &=
     \arg\min_{a \in \mathcal{A}}{
-        \mathbb{E}_y[C(y, a) \mid \vec{x}]
+        \Exp_y[C(y, a) \mid \vec{x}]
     } \\
-    &= \mathbb{E}[y \mid \vec{x}] \\
+    &= \Exp[y \mid \vec{x}] \\
     &= \int{y \cdot \hat{P}(y \mid \vec{x}) dy} \\
     &= \hat{\vec{w}}^T \vec{x}
 \end{align*}

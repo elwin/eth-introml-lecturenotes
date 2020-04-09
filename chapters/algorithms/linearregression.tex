@@ -18,7 +18,7 @@ this results in
 \end{equation*}
 
 The data set is $D = \{(\vec{x}_1, y_1), \dotsc, (\vec{x}_n, y_n)\}$
-with $\vec{x}_i \in \mathbb{R}^d$ and $y_i \in \mathbb{R}$.
+with $\vec{x}_i \in \R^d$ and $y_i \in \R$.
 
 A residual is $r_i = y_i - \vec{w}^T \vec{x}_i$ and the
 vector of residuals is given as
@@ -71,7 +71,7 @@ and in the $d$-dimensional case as
     = -2 \sum_{i = 1}^n{r_i \cdot \vec{x}_i^T}
     = 2 \vec{w}^T \vec{X}^T \vec{X} - 2 \vec{y}^T \vec{X}
 \end{equation*}.
-Note that $\hat{R}(\vec{w}) \in \mathbb{R}^{1 \times d}$.
+Note that $\hat{R}(\vec{w}) \in \R^{1 \times d}$.
 
 The closed-form solution takes $\mathcal{O}(n^3)$ time.
 The gradient descent solution takes
@@ -111,7 +111,7 @@ by using non-linear basis functions of the data:
 \begin{equation*}
     f(\vec{x}) = \sum_{i=1}^D{w_i \phi_i(\vec{x})}
 \end{equation*}
-with $\phi : \mathbb{R}^d \to \mathbb{R}^D$.
+with $\phi : \R^d \to \R^D$.
 $\phi$ is called a feature map.
 
 The model is still linear,

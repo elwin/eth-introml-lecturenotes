@@ -40,21 +40,21 @@ In general, the mass function is denoted as $P(X = x)$ and the density
 functions as $p(x)$.
 
 For continuous target spaces,
-random variables in $\mathbb{R}^D$ are considered to be
+random variables in $\R^D$ are considered to be
 real-valued random vectors.
 
-A probability density function $f : \mathbb{R}^D \to \mathbb{R}$ holds
+A probability density function $f : \R^D \to \R$ holds
 \begin{itemize}
-    \item $\forall \vec{x} \in \mathbb{R}^D : f(\vec{x}) \geq 0$
-    \item $\int_{\mathbb{R}^D}{f(\vec{x}) d\vec{x}} = 1$
+    \item $\forall \vec{x} \in \R^D : f(\vec{x}) \geq 0$
+    \item $\int_{\R^D}{f(\vec{x}) d\vec{x}} = 1$
 \end{itemize}
 A random variable $X$ is associated as
 $P(a \leq X \leq b) = \int_a^b{f(x) dx}$.
-States $\vec{x} \in \mathbb{R}^D$ are considered analogously by
-considering a vector of $x \in \mathbb{R}$.
+States $\vec{x} \in \R^D$ are considered analogously by
+considering a vector of $x \in \R$.
 
 A cumulative distribution function of a multivariate real-valued
-random variable $X$ with states $\vec{x} \in \mathbb{R}^D$ is
+random variable $X$ with states $\vec{x} \in \R^D$ is
 given by
 $F_X(\vec{x}) = P(X_1 \leq x_1, \dotsc, X_D \leq x_D)$,
 where $X = [X_1, \dotsc, X_D]^T$ and $\vec{x} = [x_1, \dotsc, x_D]^T$.
@@ -68,9 +68,9 @@ considered the distribution.
 For continuous variables, $p(x)$ is called the probability density function.
 The distribution is considered the cumulative density function $P(X \leq x)$ (but also sometimes the pdf).
 
-The characteristic function for a random vector $X \in \mathbb{R}^d$ is defined as
+The characteristic function for a random vector $X \in \R^d$ is defined as
 \begin{equation*}
-    \varphi_X(\vec{t}) = \mathbb{E}[\exp{(i \vec{t}^T X)}] \text{ for all $\vec{t} \in \mathbb{R}^d$}
+    \varphi_X(\vec{t}) = \Exp[\exp{(i \vec{t}^T X)}] \text{ for all $\vec{t} \in \R^d$}
 \end{equation*}
 and uniquely identifies a distribution.
 
@@ -108,11 +108,11 @@ The chain rule specifies that
 \end{equation*}.
 
 Let $X, Y$ be random variables with joint density $f(x, y)$.
-For $\epsilon > 0$ and $y \in \mathbb{R}, A \subseteq \mathbb{R}$, we have
+For $\epsilon > 0$ and $y \in \R, A \subseteq \R$, we have
 \begin{equation*}
     P(X \in A | Y = y) = \int{\int_A{\frac{f(x, y)}{f_Y(y)}dx}dy}
 \end{equation*}
-and the conditional distribution for $x \in \mathbb{R}$
+and the conditional distribution for $x \in \R$
 \begin{equation*}
     f_{X | Y}(x | y) = \frac{f(x, y)}{f_Y(y)}
 \end{equation*}.
@@ -150,34 +150,34 @@ The evidence/marginal likelihood is given by
 \begin{equation*}
     p(\vec{y})
     = \int{p(\vec{y} | \vec{x}) p(\vec{x}) d\vec{x}}
-    = \mathbb{E}_X[p(\vec{y} | \vec{x})]
+    = \Exp_X[p(\vec{y} | \vec{x})]
 \end{equation*}
 and it normalises the posterior.
 
 
 \subsection{Summary Statistics and Independence}
-The expected value of a function $g: \mathbb{R} \to \mathbb{R}$
+The expected value of a function $g: \R \to \R$
 of a univariate continuous random variable $X \sim p(x)$ is
 given by
 \begin{equation*}
-    \mathbb{E}_X[g(x)] = \int_\mathcal{X}{g(x) p(x) dx}
+    \Exp_X[g(x)] = \int_\mathcal{X}{g(x) p(x) dx}
 \end{equation*}
 and in the discrete case by
 \begin{equation*}
-    \mathbb{E}_X[g(x)] = \sum_{x \in \mathcal{X}}{g(x) p(x)}
+    \Exp_X[g(x)] = \sum_{x \in \mathcal{X}}{g(x) p(x)}
 \end{equation*}
 where $\mathcal{X}$ is the target space of $X$.
 
 For multivariate random variables, the expected value is defined
 element-wise. For $X = [X_1, \dotsc, X_D]$, it is
 \begin{equation*}
-    \mathbb{E}_X[g(\vec{x})] =
+    \Exp_X[g(\vec{x})] =
     \begin{bmatrix}
-        \mathbb{E}_{X_1}[g(X_1)] \\
+        \Exp_{X_1}[g(X_1)] \\
         \vdots \\
-        \mathbb{E}_{X_D}[g(X_D)]
+        \Exp_{X_D}[g(X_D)]
     \end{bmatrix}
-    \in \mathbb{R}^D
+    \in \R^D
 \end{equation*}.
 The expected value is a linear operator.
 
@@ -186,7 +186,7 @@ TODO: Weak and strong law of large numbers.
 TODO: Central limit theorem.
 
 The mean of a random variable with states $\vec{x}$ is defined as
-$\mathbb{E}_X[\vec{x}] \in \mathbb{R}^D$,
+$\Exp_X[\vec{x}] \in \R^D$,
 i.e. the expected value where $g(x)$ is the identity function.
 
 In the one dimensional case,
@@ -207,43 +207,43 @@ covariance and variance are usually dropped.
 
 The covariance between two univariate random variables $X, Y$ is
 \begin{equation*}
-    \cov_{X, Y}[x, y] :=
-        \mathbb{E}_{X, Y}[(x - \mathbb{E}_X[x]) (y - \mathbb{E}_Y[y])]
+    \Cov_{X, Y}[x, y] :=
+        \Exp_{X, Y}[(x - \Exp_X[x]) (y - \Exp_Y[y])]
 \end{equation*}
 or transformed
 \begin{equation*}
-    \cov[x, y] = \mathbb{E}[xy] - \mathbb{E}[x]\mathbb{E}[y]
+    \Cov[x, y] = \Exp[xy] - \Exp[x]\Exp[y]
 \end{equation*}.
 
 For multivariate random variables
-$X \in \mathbb{R}^D$ and $Y \in \mathbb{R}^E$
+$X \in \R^D$ and $Y \in \R^E$
 with states $\vec{x}$ and $\vec{y}$ respectively,
 the covariance is defined as
 \begin{equation*}
-    \cov[\vec{x}, \vec{y}]
-    = \mathbb{E}[\vec{x}\vec{y}^T] - \mathbb{E}[\vec{x}]\mathbb{E}[\vec{y}]^T
-    = \cov[\vec{y}, \vec{x}]^T
-    \in \mathbb{R}^{D \times E}
+    \Cov[\vec{x}, \vec{y}]
+    = \Exp[\vec{x}\vec{y}^T] - \Exp[\vec{x}]\Exp[\vec{y}]^T
+    = \Cov[\vec{y}, \vec{x}]^T
+    \in \R^{D \times E}
 \end{equation*}.
 
 The variance of a random variable $X$ in the univariate case is
 \begin{equation*}
-    \var_X[x] := \cov[x, x] = \mathbb{E}_X[(x - \mu)^2]
-    = \mathbb{E}_X[x^2] - (\mathbb{E}_X[x])^2
+    \Var_X[x] := \Cov[x, x] = \Exp_X[(x - \mu)^2]
+    = \Exp_X[x^2] - (\Exp_X[x])^2
 \end{equation*}
-where $\mu = \mathbb{E}_X[x]$,
+where $\mu = \Exp_X[x]$,
 and in the multivariate case
 \begin{equation*}
-    \var_X[\vec{x}] = \cov_X[\vec{x}, \vec{x}]
-    = \mathbb{E}_X[(\vec{x} - \vec{\mu })(\vec{x} - \vec{\mu })^T]
-    = \mathbb{E}_X[\vec{x}\vec{x}^T] - \mathbb{E}_X[\vec{x}]\mathbb{E}_X[\vec{x}]^T
+    \Var_X[\vec{x}] = \Cov_X[\vec{x}, \vec{x}]
+    = \Exp_X[(\vec{x} - \vec{\mu })(\vec{x} - \vec{\mu })^T]
+    = \Exp_X[\vec{x}\vec{x}^T] - \Exp_X[\vec{x}]\Exp_X[\vec{x}]^T
 \end{equation*}
-where $\vec{x} \in \mathbb{R}^D$ and $\vec{\mu} \in \mathbb{R}^D$
+where $\vec{x} \in \R^D$ and $\vec{\mu} \in \R^D$
 is the mean vector.
 
-In the multivariate case, $\var[\vec{x}]$ is a $D \times D$ matrix,
+In the multivariate case, $\Var[\vec{x}]$ is a $D \times D$ matrix,
 the so-called covariance matrix $S$ with
-$S_{ij} = \cov[x_i, x_j]$.
+$S_{ij} = \Cov[x_i, x_j]$.
 It is symmetric and positive (semi)definite.
 The diagonal contains the variances of the marginals.
 The off-diagonal entries are called cross-covariance terms.
@@ -251,12 +251,12 @@ The off-diagonal entries are called cross-covariance terms.
 The correlation between two random variables $X, Y$ is the normalised
 covariance, defined as
 \begin{equation*}
-    corr[x, y] = \frac{\cov[x, y]}{\sqrt{\var[x]\var[y]}}
+    corr[x, y] = \frac{\Cov[x, y]}{\sqrt{\Var[x]\Var[y]}}
     \in [-1, 1].
 \end{equation*}
 
 The standard deviation is defined as
-$\sigma(x) = \sqrt{\var[x]}$.
+$\sigma(x) = \sqrt{\Var[x]}$.
 
 These definitions are also called population mean and population
 covariance because they refer to the true statistics for the population.
@@ -267,7 +267,7 @@ and $x_1, \dotsc, x_N$ realisations.
 The empirical mean is defined as
 \begin{equation*}
     \bar{\vec{x}} := \frac{1}{N}\sum_{n = 1}^N{\vec{x}_n}
-    \in \mathbb{R}^D
+    \in \R^D
 \end{equation*}
 and the empirical covariance matrix as
 \begin{equation*}
@@ -275,18 +275,18 @@ and the empirical covariance matrix as
     \frac{1}{N} \sum_{n = 1}^N{
         (\vec{x}_n - \bar{\vec{x}})(\vec{x}_n - \bar{\vec{x}})^T
     }
-    \in \mathbb{R}^{D \times D}
+    \in \R^{D \times D}
 \end{equation*}.
 Empirical covariance matrices are symmetric, positive semi-definite.
 
 Let $X, Y$ be two random variables with states
-$\vec{x}, \vec{y} \in \mathbb{R}^D$.
+$\vec{x}, \vec{y} \in \R^D$.
 Then:
 \begin{align*}
-    \mathbb{E}[\vec{x} + \vec{y}] &= \mathbb{E}[\vec{x}] + \mathbb{E}[\vec{y}] \\
-    \mathbb{E}[\vec{x} - \vec{y}] &= \mathbb{E}[\vec{x}] - \mathbb{E}[\vec{y}] \\
-    \var[\vec{x} + \vec{y}] &= \var[\vec{x}] + \var[\vec{y}] + \cov[\vec{x}, \vec{y}] + \cov[\vec{y}, \vec{x}] \\
-    \var[\vec{x} - \vec{y}] &= \var[\vec{x}] + \var[\vec{y}] - \cov[\vec{x}, \vec{y}] - \cov[\vec{y}, \vec{x}]
+    \Exp[\vec{x} + \vec{y}] &= \Exp[\vec{x}] + \Exp[\vec{y}] \\
+    \Exp[\vec{x} - \vec{y}] &= \Exp[\vec{x}] - \Exp[\vec{y}] \\
+    \Var[\vec{x} + \vec{y}] &= \Var[\vec{x}] + \Var[\vec{y}] + \Cov[\vec{x}, \vec{y}] + \Cov[\vec{y}, \vec{x}] \\
+    \Var[\vec{x} - \vec{y}] &= \Var[\vec{x}] + \Var[\vec{y}] - \Cov[\vec{x}, \vec{y}] - \Cov[\vec{y}, \vec{x}]
 \end{align*}
 
 Let $X$ be a random variable with mean $\vec{\mu}$ and
@@ -294,23 +294,23 @@ covariance matrix $\vec{\Sigma}$ and a deterministic affine
 transform $\vec{y} = \vec{A} \vec{x} + \vec{b}$ of $\vec{x}$.
 Then $\vec{y}$ is also a random variable with
 \begin{align*}
-    \mathbb{E}_Y[\vec{Y}] &=
-        \mathbb{E}_X[\vec{A} \vec{x} + \vec{b}] =
-        \vec{A} \mathbb{E}_X[\vec{x}] + \vec{b} =
+    \Exp_Y[\vec{Y}] &=
+        \Exp_X[\vec{A} \vec{x} + \vec{b}] =
+        \vec{A} \Exp_X[\vec{x}] + \vec{b} =
         \vec{A} \vec{\mu} + \vec{b} \\
-    \var_Y[\vec{Y}] &=
-        \var_X[\vec{A} \vec{x} + \vec{b}] =
-        \var_X[\vec{A} \vec{x}] =
-        \vec{A} \var_X[\vec{x}] \vec{A}^T =
+    \Var_Y[\vec{Y}] &=
+        \Var_X[\vec{A} \vec{x} + \vec{b}] =
+        \Var_X[\vec{A} \vec{x}] =
+        \vec{A} \Var_X[\vec{x}] \vec{A}^T =
         \vec{A} \vec{\Sigma} \vec{A}^T
 \end{align*}
 and
 \begin{align*}
-    \cov[\vec{x}, \vec{y}] &=
-        \mathbb{E}[\vec{x}(\vec{A} \vec{x} + \vec{b})^T]
-        - \mathbb{E}[\vec{x}]\mathbb{E}[\vec{A} \vec{x} + \vec{b}]^T \\
-    &= \mathbb{E}[\vec{x}]\vec{b}^T + \mathbb{E}[\vec{x}\vec{x}^T]\vec{A}^T - \vec{\mu}\vec{b}^T - \vec{\mu}\vec{\mu}^T\vec{A}^T \\
-    &= \vec{\mu}\vec{b}^T - \vec{\mu}\vec{b}^T + (\mathbb{E}[\vec{x}\vec{x}^T] - \vec{\mu}\vec{\mu}^T)\vec{A}^T \\
+    \Cov[\vec{x}, \vec{y}] &=
+        \Exp[\vec{x}(\vec{A} \vec{x} + \vec{b})^T]
+        - \Exp[\vec{x}]\Exp[\vec{A} \vec{x} + \vec{b}]^T \\
+    &= \Exp[\vec{x}]\vec{b}^T + \Exp[\vec{x}\vec{x}^T]\vec{A}^T - \vec{\mu}\vec{b}^T - \vec{\mu}\vec{\mu}^T\vec{A}^T \\
+    &= \vec{\mu}\vec{b}^T - \vec{\mu}\vec{b}^T + (\Exp[\vec{x}\vec{x}^T] - \vec{\mu}\vec{\mu}^T)\vec{A}^T \\
     &= \vec{\Sigma}\vec{A}^T
 \end{align*}
 
@@ -391,8 +391,8 @@ Let $p(x) = \alpha p_1(x) + (1 - \alpha)p_2(x)$ be a weighted
 mixture of univariate Gaussian densities $p_1(x), p_2(x)$.
 Then
 \begin{align*}
-    \mathbb{E}[x] &= \alpha \mu_1 + (1 - \alpha) \mu_2 \\
-    \var[x] &= [\alpha \sigma_1^2 + (1 - \alpha) \sigma_2^2] +
+    \Exp[x] &= \alpha \mu_1 + (1 - \alpha) \mu_2 \\
+    \Var[x] &= [\alpha \sigma_1^2 + (1 - \alpha) \sigma_2^2] +
     ([\alpha \mu_1^2 + (1 - \alpha) \mu_2^2] - [\alpha \mu_1 + (1 - \alpha) \mu_2]^2)
 \end{align*}.
 The mean of a mixture is the weighted sum of the means of each component.
@@ -403,8 +403,8 @@ Let $X \sim \mathcal{N}(\vec{\mu}, \vec{\Sigma})$, $\vec{A}$ a matrix
 and $\vec{y} = \vec{A}\vec{x} + \vec{b}$.
 Then
 \begin{align*}
-    \mathbb{E}[\vec{y}] &= \vec{A} \vec{\mu} \\
-    \var[\vec{y}] &= \vec{A} \var[\vec{x}] \vec{A}^T = \vec{A} \vec{\Sigma} \vec{A} \\
+    \Exp[\vec{y}] &= \vec{A} \vec{\mu} \\
+    \Var[\vec{y}] &= \vec{A} \Var[\vec{x}] \vec{A}^T = \vec{A} \vec{\Sigma} \vec{A} \\
     p(\vec{y}) &= \mathcal{N}(\vec{y} | \vec{A}\vec{\mu}, \vec{A} \vec{\Sigma} \vec{A}^T)
 \end{align*}.
 
@@ -422,17 +422,17 @@ The Bernoulli distribution is for a single binary random variable,
 parameterised by $\mu \in [0, 1]$.
 \begin{align*}
     p(x | \mu) &= \mu^x (1 - \mu)^{1 - x}, x \in \{0, 1\} \\
-    \mathbb{E}[x] &= \mu \\
-    \var[x] &= \mu (1 - \mu)
+    \Exp[x] &= \mu \\
+    \Var[x] &= \mu (1 - \mu)
 \end{align*}
 
 The Binomial distribution generalises the Bernoulli distribution over
 integers. It is written as $Bin(N, \mu)$ where
-$\mu \in [0, 1]$ and $N \in \mathbb{N}$.
+$\mu \in [0, 1]$ and $N \in \N$.
 \begin{align*}
     p(m | N, \mu) &= \binom{N}{m} \mu^m (1 - \mu)^{N - m} \\
-    \mathbb{E}[m] &= N \mu \\
-    \var[m] &= N \mu (1 - \mu)
+    \Exp[m] &= N \mu \\
+    \Var[m] &= N \mu (1 - \mu)
 \end{align*}
 
 The Beta distribution is a distribution over a continuous random variable
@@ -443,8 +443,8 @@ It is written $Beta(\alpha, \beta)$ with $\alpha > 0$, $\beta > 0$.
     p(\mu | \alpha, \beta) &=
         \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}
         \mu^{\alpha - 1} (1 - \mu)^{\beta - 1} \\
-    \mathbb{E}[\mu] &= \frac{\alpha}{\alpha + \beta} \\
-    \var[\mu] &= \frac{\alpha \beta}{
+    \Exp[\mu] &= \frac{\alpha}{\alpha + \beta} \\
+    \Var[\mu] &= \frac{\alpha \beta}{
         (\alpha + \beta)^2 (\alpha + \beta + 1)
     }
 \end{align*}
@@ -522,7 +522,7 @@ a fixed distribution but there parameters are inferred (usually done)
 and only a family of distributions.
 
 An exponential family is a family of probability distributions
-parameterised by $\vec{\theta} \in \mathbb{R}^D$ of the form
+parameterised by $\vec{\theta} \in \R^D$ of the form
 \begin{equation*}
     p(\vec{x} | \vec{\theta}) = h(\vec{x})
         \exp(\langle \vec{\theta}, \vec{\phi}(\vec{x}) \rangle - A(\vec{\theta}))

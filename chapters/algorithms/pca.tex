@@ -1,6 +1,6 @@
 \section{PCA}
 Let
-$D = \{\vec{x}_1, \dotsc, \vec{x}_n\}, \vec{x}_i \in \mathbb{R}^d$
+$D = \{\vec{x}_1, \dotsc, \vec{x}_n\}, \vec{x}_i \in \R^d$
 be a data set with zero mean,
 i.e. $\vec{\mu} = \frac{1}{n} \sum_{i=1}^n{\vec{x}_i} = \vec{0}$.
 
@@ -10,8 +10,8 @@ The \emph{PCA problem} for $k < n$ is finding
         \sum_{i=1}^n{\norm{\vec{W} \vec{z}_i - \vec{x}_i}_2^2}
     }
 \end{equation*}
-where $\vec{W} \in \mathbb{R}^{d \times k}$ is orthogonal and
-$\vec{z}_i \in \mathbb{R}^k$.
+where $\vec{W} \in \R^{d \times k}$ is orthogonal and
+$\vec{z}_i \in \R^k$.
 
 Let $\vec{\Sigma}$ be the empirical covariance, given as
 \begin{equation*}
@@ -36,8 +36,8 @@ and the $\lambda_i$ are ordered in descending order,
 $\lambda_1 \geq \dotsb \geq \lambda_d \geq 0$.
 
 Then, the linear mapping $f(\vec{x}) = \vec{W}^T \vec{x}$
-projects $\vec{x} \in \mathbb{R}^d$ to a $k$-dimensional
-subspace $\mathbb{R}^k$.
+projects $\vec{x} \in \R^d$ to a $k$-dimensional
+subspace $\R^k$.
 It minimises the reconstruction error with respect to
 the Euclidian norm.
 
@@ -49,7 +49,7 @@ PCA preserves those clusters.
 Assume $\vec{\mu} = \frac{1}{n} \sum_{i=1}^n{\vec{x}_i} = \vec{0}$.
 
 The goal is to represent data points $\vec{x}_i$ on a line
-$\vec{w} \in \mathbb{R}^d$ with coefficients $z_i$.
+$\vec{w} \in \R^d$ with coefficients $z_i$.
 Thus, we want $z_i \vec{w} \approx \vec{x}_i$.
 
 To get a unique solution, we further require $\vec{w}$
@@ -163,12 +163,12 @@ This generalises for $k > 1$ principal components.
 
 
 \subsection{Connection to SVD}
-Let $\vec{X} \in \mathbb{R}^{n \times d}$ be the data matrix,
+Let $\vec{X} \in \R^{n \times d}$ be the data matrix,
 centred.
 Furhtermore, let $\vec{X} = \vec{U} \vec{S} \vec{V}^T$ be
-the SVD of $\vec{X}$ where $\vec{U} \in \mathbb{R}^{n \times n}$
-and $\vec{V} \in \mathbb{R}^{d \times d}$ are orthogonal,
-and $\vec{S} \in \mathbb{R}^{n \times d}$ contains the singular
+the SVD of $\vec{X}$ where $\vec{U} \in \R^{n \times n}$
+and $\vec{V} \in \R^{d \times d}$ are orthogonal,
+and $\vec{S} \in \R^{n \times d}$ contains the singular
 values in decreasing order on its diagonal.
 
 The top $k$ principal components are then the first $k$
@@ -200,8 +200,8 @@ The PCA problem is
         \sum_{i=1}^n{\norm{\vec{W} \vec{z}_i - \vec{x}_i}_2^2}
     }
 \end{equation*}
-where $\vec{W} \in \mathbb{R}^{d \times k}$ is orthogonal and
-$\vec{z}_i \in \mathbb{R}^k$.
+where $\vec{W} \in \R^{d \times k}$ is orthogonal and
+$\vec{z}_i \in \R^k$.
 
 The k-means problem is
 \begin{equation*}
@@ -209,9 +209,9 @@ The k-means problem is
         \sum_{i=1}^n{\norm{\vec{W} \vec{z}_i - \vec{x}_i}_2^2}
     }
 \end{equation*}
-where $\vec{W} \in \mathbb{R}^{d \times k}$ is arbitrary and
+where $\vec{W} \in \R^{d \times k}$ is arbitrary and
 $\vec{z}_i \in E_k$ where $E_k$ is the set of unit vectors
-in $\mathbb{R}^k$.
+in $\R^k$.
 
 The discrete nature of the k-means problem makes it NP-hard.
 Conversely, PCA can be used to initialise k-means cluster centres.
@@ -226,13 +226,13 @@ two principal components, etc.
 For non-linear problems, PCA can be kernelised.
 
 Let $k \geq 1$ be the target dimensionality
-and $\vec{K} \in \mathbb{R}^{n \times n}$
+and $\vec{K} \in \R^{n \times n}$
 be the kernel/Gram matrix and its eigendecomposition
 $\vec{K} = \sum_{i=1}^n{\lambda_i \vec{v}_i \vec{v}_i^T}$
 with $\lambda_1 \geq \dotsb \geq \lambda_n \geq 0$.
 
 The \emph{kernel principal components} are given by
-$\vec{\alpha}^{(1)}, \dotsc, \vec{\alpha}^{(k)} \in \mathbb{R}^n$
+$\vec{\alpha}^{(1)}, \dotsc, \vec{\alpha}^{(k)} \in \R^n$
 where
 \begin{equation*}
     \vec{\alpha}^{(i)} = \frac{1}{\sqrt{\lambda_i}}
@@ -240,7 +240,7 @@ where
 \end{equation*}
 
 Given this, a new point $\vec{x}$ is projected as
-$\vec{z} \in \mathbb{R}^k$ with
+$\vec{z} \in \R^k$ with
 \begin{equation*}
     z_i = \sum_{j=1}^n{
         \alpha_j^{(i)} k(\vec{x}, \vec{x}_j)
