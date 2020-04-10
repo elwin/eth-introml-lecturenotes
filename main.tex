@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{report}
+\documentclass[11pt,a4paper,oneside]{memoir}
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[OT1]{fontenc}
@@ -18,19 +18,24 @@
 \usepackage[linkcolor=black,colorlinks=true,citecolor=black,filecolor=black,bookmarks=true]{hyperref}
 
 \input{theoremsetup}
+\input{layoutsetup}
 \input{macrosetup}
 
-\title{ETH IntroML Lecture Notes}
+\title{ETH Introduction to Machine Learning \\ Lecture Notes}
 \author{Michael Aerni \\ aernim@student.ethz.ch}
-\date{September 2019}
+\date{September 2019 \\ (updated \today)}
 
 \begin{document}
 
 \maketitle
 
+\frontmatter
+
 \tableofcontents
 
 \input{chapters/preface.tex}
+
+\mainmatter
 
 %\input{chapters/mathematics.tex}
 \input{chapters/general.tex}
