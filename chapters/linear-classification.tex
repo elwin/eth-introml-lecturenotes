@@ -1,2 +1,585 @@
 \chapter{Linear Classification}
-\todo{Linear Classification chapter}
+\todo{Fix this chapter}
+
+\section{Perceptron}
+The general idea is to fit a model
+$h: \R^d \to \{+1, -1\}$ where $+1$ denotes the positive
+class, $-1$ the negative class:
+$h(\vec{x}) = sign(\vec{w}^T \vec{x})$.
+
+In linear classification, the assumption is that
+the classification boundary is a hyperplane
+going through the origin.
+
+The $\ell_{0/1}$ loss is defined as follows
+\begin{equation*}
+\ell_{0/1}(\vec{w}; \vec{x}_i, y_i) =
+\begin{cases}
+1 & \text{if $y_i \neq sign(\vec{w}^T \vec{x}_i)$} \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation*}
+
+The goal is to minimise the $\ell_{0/1}$ loss.
+However, it is not convex and not differentiable.
+Thus, a surrogate loss is needed.
+
+The perceptron loss is a convex surrogate for the
+$\ell_{0/1}$ loss, defined as
+\begin{equation*}
+\ell_p(\vec{w}; \vec{x}, y) =
+\max(0, -y \vec{w}^T \vec{x})
+\end{equation*}
+and is a surrogate for the $\ell_{0/1}$ loss.
+It is $0$ if the sign of the prediction and $y$ match,
+and linear in the misclassification otherwise.
+
+The gradient of the perceptron loss for a single sample is
+\begin{equation*}
+\nabla_{\vec{w}} \ell_p(\vec{w}; \vec{x}_i, y_i) =
+\begin{cases}
+0 & \text{if $\vec{w}^T \vec{x}_i y_i \geq 0$} \\
+-y_i \vec{x}_i & \text{if $\vec{w}^T \vec{x}_i y_i < 0$}
+\end{cases}
+\end{equation*}
+
+Thus, the gradient of the empirical risk of the perceptron loss is
+\begin{equation*}
+\nabla_{\vec{w}} \hat{R}(\vec{w})
+= - \frac{1}{n} \sum_{i : (\vec{x}_i, y_i) \text{incorrect}}{
+	y_i \vec{x}_i
+}
+\end{equation*}
+
+The perceptron algorithm performs stochastic gradient descent
+(1 sample at a time) on the perceptron loss function
+$\ell_p$ with learning rate $1$.
+In practice, a different learning rate is used
+because the data is not usually linearly separable.
+
+\begin{theorem}
+	If the data is linearly separable, the perceptron will obtain
+	a linear separator.
+\end{theorem}
+
+
+\subsection{Kernelised Perceptron}
+The reformulation of the perceptron in terms of inner
+products is
+\begin{equation*}
+\hat{\vec{\alpha}} = \arg\min_{\vec{\alpha}}{
+	\frac{1}{n}
+	\sum_{i=1}^n{\max\{
+		0, -\sum_{j=1}^n{\alpha_j y_i y_j \vec{x}_i^T \vec{x}_j}
+		\}}
+}
+\end{equation*}
+and the kernelised objective
+\begin{equation*}
+\hat{\vec{\alpha}} = \arg\min_{\vec{\alpha}}{
+	\frac{1}{n}
+	\sum_{i=1}^n{\max\{
+		0, -\sum_{j=1}^n{\alpha_j y_i y_j k(\vec{x}_i, \vec{x}_j)}
+		\}}
+}
+\end{equation*}
+
+Prediction for sample $\vec{x}$ is done as
+\begin{equation*}
+\hat{y} = sign\left(
+\sum_{j=1}^n{\alpha_j y_j k(\vec{x}_j, \vec{x})}
+\right)
+\end{equation*}
+
+Training is very similar to the original formulation.
+If the wrong class for sample $\vec{x}_i$ is predicted,
+the update is
+\begin{equation*}
+\alpha_{t+1, i} \gets \alpha_{t, i} + \eta_t
+\end{equation*}
+
+
+\section{$k$-Nearest Neighbour}
+For a data point $\vec{x}$,
+predict the majority of labels of its
+$k$ nearest neighbours.
+Nearness is measured according to some
+distance function.
+
+The $k$-nearest neighbour classifier can be
+viewed as an alternative to the perceptron
+where the perceptron does not use a fixed
+$k$ but chooses the neighbour's influence
+smoothly according to the kernel.
+
+The KNN classifier can thus for example
+not capture global trends and depends on
+all data, not only wrongly classified samples.
+
+Formally, the prediction is defined as
+\begin{equation*}
+y = sign\left(
+\sum_{i=1}^n{y_i \cdot
+	[\text{$\vec{x}_i$ among $k$ nearest neighbours of $\vec{x}$}]
+}
+\right)
+\end{equation*}
+
+
+\section{Classification Metrics and Class Imbalance}
+
+\subsection{Class Imbalance}
+Generally, the positive class is assumed to be rare.
+There are multiple ways class imbalance can be mitigated:
+
+\begin{description}
+	\item[Subsampling] is removing majority class samples
+	from the data set (e.g. uniformly at random).
+	\item[Upsampling] is repeating data points from the
+	minority class, possibly with small random perturbations.
+	\item[Cost-sensitive classification] methods change
+	the loss function to consider the class distribution.
+\end{description}
+
+Downsampling results in a smaller data set, thus training
+becomes faster. However, data is wasted and information about
+the majority class may be lost.
+Upsampling makes use of all data but is slower and
+perturbations requires arbitrary choices.
+Cost-sensitive classification methods are a solution
+to those problems.
+
+In cost-sensitive classification,
+the loss $\ell(\vec{w}; \vec{x}, y)$ is replaced as
+\begin{equation*}
+\ell_{CS} = c_y \ell(\vec{w}; \vec{x}, y)
+\end{equation*}
+where $c_{+}, c_{-}$ (in the binary case) control the tradeoff.
+
+In the case of perceptron and SVM, the constants change the
+slope of the loss.
+They also scale the gradient.
+
+In the case of binary classification, specifying
+$c_{+}$ and $c_{-}$ is equivalent to specifying
+$\alpha = \frac{c_{+}}{c_{-}}$ and using
+$c_{+}' = \alpha, c_{-} = 1$.
+
+Instead of using a cost-sensitive classifier,
+one can also use a single classifier and vary the
+\emph{classification threshold} $\tau$
+($y = sign(\vec{w}^T \vec{x} - \tau$)).
+This is similar to training multiple classifiers with
+different cost-sensitive parameters, but has lower
+computational cost.
+However, optimising the cost-sensitive loss should lead to better results.
+
+
+\subsection{Classification Metrics}
+\begin{table}[h]
+	\begin{tabular}{lllll}
+		& \multicolumn{3}{c}{True label}                                                                &      \\ \cline{3-4}
+		\multirow{3}{*}{Predicted label} & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{Positive} & \multicolumn{1}{l|}{Negative} &      \\ \cline{2-4}
+		& \multicolumn{1}{l|}{Positive} & \multicolumn{1}{l|}{TP}       & \multicolumn{1}{l|}{FP}       & $\Sigma = p_{+}$ \\ \cline{2-4}
+		& \multicolumn{1}{l|}{Negative} & \multicolumn{1}{l|}{FN}       & \multicolumn{1}{l|}{TN}       & $\Sigma = p_{-}$ \\ \cline{2-4}
+		&                               & $\Sigma = n_{+}$              & $\Sigma = n_{-}$ &     
+	\end{tabular}
+\end{table}
+
+A confusion matrix is a generalisation of the
+table to $c$ classes where the columns are
+the true class, the rows the predicted classes,
+and the fields contain the counts.
+
+Let $n$ be the total number of samples.
+$n = p_{+} + p_{-} = n_{+} + n_{-}$.
+Everything containing $n$ refers to the true data,
+everything containing $p$ to the predictions.
+
+General metrics are
+\begin{description}
+	\item[Accuracy]: \begin{equation*}
+	\frac{TP + TN}{n}
+	\end{equation*}
+	\item[Precision]: \begin{equation*}
+	\frac{TP}{TP + FP} = \frac{TP}{p_{+}}
+	\end{equation*}
+	\item[Recall / Sensitivity / TPR]: \begin{equation*}
+	\frac{TP}{TP + FN} = \frac{TP}{n_{+}}
+	\end{equation*}
+	\item[Specificity / TNR]: \begin{equation*}
+	\frac{TN}{FP + TN} = \frac{TN}{n_{-}}
+	\end{equation*}
+	\item[F1 Score]: \begin{equation*}
+	\frac{2TP}{2TP + FP + FN} = \frac{2}{\frac{1}{prec} + \frac{1}{rec}} = 2 \cdot \frac{prec \cdot rec}{prec + rec}
+	\end{equation*}
+	\item[$F_\beta$ Score]: \begin{equation*}
+	(1 + \beta^2) \cdot \frac{prec \cdot rec}{\beta^2 prec + rec}
+	\end{equation*}
+\end{description}
+The F1 score is the
+harmonic mean between precision and recall.
+Precision and recall should not be averaged!
+The $F_\beta$ score is a generalisation of the
+F1 score.
+
+TODO: Micro and macro averaging of F-scores.
+
+TODO: Cross-entropy loss.
+
+In the \emph{precision recall curve},
+recall is used for the x-axis, precision for the y-axis.
+Being in the top-right corner is better.
+
+More metrics are
+\begin{description}
+	\item[True positive rate (TPR)]: \begin{equation*}
+	\frac{TP}{TP + FN} = \frac{TP}{n_{+}} = recall
+	\end{equation*}
+	\item[False positive rate (FPR)]: \begin{equation*}
+	\frac{FP}{TN + FP} = \frac{FP}{n_{-}}
+	\end{equation*}
+	\item[True negative rate (TNR)]: \begin{equation*}
+	\frac{TN}{FP + TN} = \frac{TN}{n_{-}} = specificity
+	\end{equation*}
+\end{description}
+
+Suppose class $+$ is predicted with probability $p$.
+Then, $\Exp[TPR] = \Exp[FPR] = p$.
+Thus, TPR and FPR establish a baseline:
+If we predict labels at random with probability $p$,
+the expected TPR and FPR are $p$.
+
+The \emph{Receiver Operator Characteristic (ROC) Curve}
+uses the FPR as the x-axis, TPR as the y-axis.
+Being on the line with slope $1$ corresponds to random
+guessing. Being closer to the bottom right corner is worse
+than random guessing, being closer to the top left corner
+is better.
+
+\begin{theorem}
+	Algorithm 1 dominates algorithm 2 in terms of the
+	ROC Curve if and only if
+	algorithm 1 dominates algorithm 2 in terms of the
+	Precision Recall Curve.
+	
+	One algorithm dominates the other if its curve
+	is strictly above the other curve.
+\end{theorem}
+
+The \emph{Area under the Curve (AUC)} describes the
+area under the Precision Recall / ROC curve.
+Thus, for ROC, $AUC = \frac{1}{2}$ corresponds to random
+guessing, $AUC = 1$ is ideal.
+
+
+\section{Multi-Class Classification}
+In this section, let $y_i \in \mathcal{Y} = \{1, \dotsc, c\}$
+and $D$ be the data set.
+In a multi-class classification scenario,
+we want a function $f : \mathcal{X} \to \mathcal{Y}$.
+
+In one-vs-all (OVA) / one-vs-rest (OVR) classification,
+$c$ binary classifiers $f^{(i)}$ are trained,
+one for each class.
+The positive examples are those from class $c$,
+negative examples those from all other classes.
+
+The prediction is then
+\begin{equation*}
+\hat{y} = \arg\max_i f^{(i)}(\vec{x})
+\end{equation*}
+i.e. take the classifier with the highest confidence.
+
+The confidence of a classification is given as
+$|f^{(i)}(\vec{x})|$.
+For any $\alpha > 0$, multiplying it to the function output
+does not change the classification result, but the confidence.
+One solution for a consistent confidence measure would thus be
+to normalise the weights,
+i.e. $\vec{w} \gets \frac{\vec{w}}{\norm{\vec{w}}_2}$.
+However, in practice, if regularisation is used,
+the magnitude $\norm{\vec{w}}_2$ is generally under control.
+
+If unit magnitude for all weights is assumed,
+we can consider the euclidian distance from a point
+to each decision boundary.
+Thus, in all overlapped areas, the decision boundaries
+are separated by equal angles.
+
+One-vs-all classification only works if classifiers produce
+confidences of similar magnitude.
+Furthermore, individual classifiers almost always see
+a very imbalanced data set.
+Also, some class might not be linearly separable from the
+others, leading to failure.
+
+In one-vs-one (OVO) classification,
+$\frac{c (c - 1)}{2}$ classifiers are trained;
+one for each distinct pair of classes $(i, j)$.
+The positive samples are those from class $i$,
+negative ones from class $j$.
+
+The prediction is done using a voting scheme.
+The class with the highest number of positive predictions wins.
+However, ties may happen and need to be broken somehow.
+
+The advantage of OVA is that it is faster as fewer classifiers
+need to be trained. However, it requires confidence and leads
+to class imbalance.
+OVO does not have confidence or imbalance issues,
+but is slower to train.
+
+The alternatives are using other encodings or
+multi-class models.
+
+
+\section{SVM}
+Support vector machines perform maximum margin linear classification.
+Intuitively, this means to maximise the distance between the decision
+boundary and both classes.
+Formally, the margin is the euclidian distance
+between two hyperplanes parallel to the decision boundary.
+
+The points which defined the distance from the decision
+boundary are called the support vectors.
+
+
+\subsection{General SVMs}
+
+SVM uses the Hinge loss which is defined as follows:
+\begin{equation*}
+\ell_H(\vec{w}; \vec{x}, y) =
+\max(0, 1 - y \vec{w}^T \vec{x})
+\end{equation*}
+It only becomes zero if a sample is classified correctly
+with a certain "confidence".
+The Hinge loss is a convex upper-bound on the
+zero-one loss.
+
+The constant $1$ is used in the Hinge loss to ensure
+that weights do not explode.
+Any other constant can be compensated by simply
+scaling the weights accordingly.
+
+The complete SVM objective is
+\begin{equation*}
+\hat{\vec{w}} = \arg\min_{\vec{w}} \frac{1}{n}
+\sum_{i=1}^n \max\{0, 1 - y_i \vec{w}^T \vec{x}_i\}
++ \lambda \norm{\vec{w}}_2^2
+\end{equation*}
+Both the Hinge loss and the regularisation term are required for
+the SVM to work.
+Furthermore, features have to be standardised.
+TODO: Do features really have to be standardised?
+
+The gradient of the Hinge loss is
+\begin{equation*}
+\nabla_{\vec{w}} \ell_H(\vec{w}; \vec{x}, y) =
+\begin{cases}
+0 & \text{if $\vec{w}^T \vec{x}_i y_i \geq 1$} \\
+-y_i \vec{x}_i & \text{if $\vec{w}^T \vec{x}_i y_i < 1$}
+\end{cases}
+\end{equation*}
+
+Thus, the gradient of the empirical risk for SVMs is
+\begin{equation*}
+\nabla_{\vec{w}} \hat{R}(\vec{w})
+= - \frac{1}{n} \sum_{i : \vec{w}^T \vec{x}_i y_i < 1}{
+	y_i \vec{x}_i
+}
++ 2 \vec{w}
+\end{equation*}
+
+If the data is linearly separable, SVM finds the
+maximum margin decision boundary.
+
+A safe learning rate choice is $\eta_t = \frac{1}{\lambda t}$, i.e. use learning rate decay
+based on the regularisation parameter $\lambda$.
+
+
+\subsection{$L_1$-SVM}
+In $L_1$-SVM, the penalty term is replaced with a $L_1$ loss,
+thus the objective becomes
+\begin{equation*}
+\hat{\vec{w}} = \arg\min_{\vec{w}} \frac{1}{n}
+\sum_{i=1}^n \max\{0, 1 - y_i \vec{w}^T \vec{x}_i\}
++ \lambda \norm{\vec{w}}_1
+\end{equation*}
+
+The alternative penalty term encourages coefficients to be
+exactly zero and thus results in automatic feature selection.
+
+
+\subsection{Geometric Interpretation}
+TODO: Honestly, just read tutorial 4.
+
+A \emph{hyperplane} in $\R^d$ is the
+set of vectors fulfilling
+$\langle \vec{w}, \vec{x} \rangle = 0$.
+It is a $d-1$ dimensional subspace.
+For $b \in \R$, the set
+$\{\vec{x} \in \R^d \mid \langle \vec{w}, \vec{x} \rangle = b\}$
+is a \emph{translated/affine hyperplane}.
+Increasing $b$ moves the hyperplane towards
+the direction of $\vec{w}$ and vice versa.
+
+The \emph{orthogonal projection} of $\vec{z}$
+onto a hyperplane is given by $\hat{\vec{z}} = \vec{z} + t \vec{w}$
+where $t = \frac{b - \langle \vec{w}, \vec{z} \rangle}{\norm{\vec{w}}^2}$.
+
+The \emph{orthogonal distance} of $\vec{z}$ to a
+hyperplane $H = \{\vec{x} \in \R^d \mid \langle \vec{w}, \vec{x} \rangle = 0\}$
+is given by
+\begin{equation*}
+\frac{| \langle \vec{w}, \vec{z} \rangle |}{\norm{\vec{w}}^2}
+\end{equation*}
+If $\vec{w}$ is a unit vector, the distance is directly
+given by $|\langle \vec{w}, \vec{z} \rangle|$.
+
+From now on, $\vec{z}$ contains an additional entry
+$1$ and $\vec{w}$ contains an additional entry $-b$.
+Therefore, all hyperplanes are through the origin.
+
+Let $D$ be a data set and $H$ a hyperplane.
+The \emph{margin} of $H$ w.r.t. $D$ is
+\begin{equation*}
+\gamma_D(\vec{w}) := \min_{(\vec{x}, y) \in D}{
+	\frac{|\langle \vec{w}, \vec{x} \rangle |}{\norm{\vec{w}}}
+}
+\end{equation*}
+
+We now assume that
+\begin{enumerate}
+	\item The data is linearly separable.
+	\item There exists a separating hyperplane with non-zero margin.
+\end{enumerate}
+
+The \emph{Hard-SVM} problem requires both assumptions.
+It is minimising
+\begin{equation*}
+\frac{1}{2} \norm{\vec{w}}^2
+\end{equation*}
+such that
+\begin{equation*}
+y_i \cdot \langle \vec{w}, \vec{x}_i \rangle
+\geq 1 \text{ for all $i \in \{1, \dotsc, n\}$}
+\end{equation*}
+
+The separating hyperplane assumption can be
+dropped by introducing \emph{slack variables}
+$\xi_1, \dotsc, \xi_n \geq 0$
+which allow to violate some constraints.
+$\xi_i$ denotes the amount the
+$i$-th constraint is violated.
+
+This leads to the \emph{Soft-SVM} problem.
+It is minimising
+\begin{equation*}
+\frac{1}{2} \norm{\vec{w}}^2 + C \sum_{i=1}^n{\xi_i}
+\end{equation*}
+such that
+\begin{align*}
+y_i \cdot \langle \vec{w}, \vec{x}_i \rangle
+&\geq 1 - \xi_i & \text{ for all $i \in \{1, \dotsc, n\}$} \\
+\xi_i &\geq 0 & \text{ for all $i \in \{1, \dotsc, n\}$}
+\end{align*}
+where $C > 0$ denotes the softness of the problem.
+
+If $C = 0$ then $\vec{w} = \vec{0}$ is a trivial
+solution; if $C \to \infty$ then the problem
+becomes similar to the Hard-SVM problem.
+
+Fixing $\vec{w}$ and optimising $\xi_i$
+leads to the solution
+\begin{equation*}
+\xi_i^*(\vec{w}) = \ell_H(y_i \cdot \langle \vec{w}, \vec{x}_i \rangle)
+\end{equation*}
+and by plugging it in to the equivalent
+optimisation objective
+\begin{equation*}
+\arg\min_{\vec{w}}{
+	\frac{1}{2} \norm{\vec{w}}^2
+	+ C \sum_{i=1}^n{\ell_H(y_i \cdot \langle \vec{w}, \vec{x}_i \rangle)}
+}
+\end{equation*}
+
+
+\subsection{Kernelised SVM}
+The reformulisation of the SVM loss (without regulariser)
+with respect to inner products and kernels
+for sample $i$ is
+\begin{equation*}
+\max\{0, 1 - y_i \sum_{j=1}^n{\alpha_j y_j k(\vec{x}_j, \vec{x}_i)}\}
+\end{equation*}
+and for the regulariser
+\begin{equation*}
+\lambda \sum_{i=1}^n\sum_{j=1}^n{
+	\alpha_i \alpha_j y_i y_j k(\vec{x}_i, \vec{x}_j)
+}
+= \lambda \vec{\alpha}^T \vec{D}_y \vec{K} \vec{D}_y \vec{\alpha}
+\end{equation*}
+where $\vec{K}$ is the Gram matrix and
+$\vec{D}_y$ contains the $y_i$ on its diagonal.
+
+This leads to the new objective
+\begin{equation*}
+\hat{\vec{\alpha}} = \arg\min_{\vec{\alpha}}{
+	\frac{1}{n} \sum_{i=1}^n{
+		\max\{0, 1 - y_i \vec{\alpha}^T \vec{k}_i\} +
+		\lambda \vec{\alpha}^T \vec{D}_y \vec{K} \vec{D}_y \vec{\alpha}
+	}
+}
+\end{equation*}
+where $\vec{k}_i = [y_1 k(\vec{x}_i, \vec{x}_1), \dotsc, y_n k(\vec{x}_i, \vec{x}_n)]$.
+
+Prediction for a data point $\vec{x}$ is done as
+\begin{equation*}
+\hat{y} = sign\left(
+\sum_{i=1}^n{\alpha_i y_i k(\vec{x}_i, \vec{x})}
+\right)
+\end{equation*}
+
+
+\subsection{Multi-Class SVM}
+SVMs can be generalised to a multi-class scenario.
+The key idea is to maintain $c$ weight vectors
+$\vec{w}^{(i)}$, one for each class.
+The prediction is then
+\begin{equation*}
+\hat{y} = \arg\max_i{\vec{w}^{(i)^T} \vec{x}}
+\end{equation*}
+
+For each data point, it should hold that the prediction
+for the true class is separated by a margin from the
+class which has the second highest prediction, i.e.
+\begin{equation*}
+\vec{w}^{(y)^T} \vec{x} \geq
+\max_{i \neq y}{\vec{w}^{(i)^T}\vec{x}} + 1
+\end{equation*}
+
+The multi-class Hinge loss is given as
+\begin{equation*}
+\ell_{MC-H}(\vec{w}^{(1)}, \dotsc, \vec{w}^{(c)}; \vec{x}, y)
+= \max{\{0, 1 +
+	\max_{j \neq y}
+	{\vec{w}^{(j)^T}\vec{x} - \vec{w}^{(y)^T}\vec{x}}
+	\}}
+\end{equation*}
+
+The gradient is
+\begin{equation*}
+\nabla_{\vec{w}^{(i)}} \ell_{MC-H}(\vec{w}^{(1:c)}; \vec{x}, y) =
+\begin{cases}
+0 & \text{if $\vec{w}^{(y)^T} \vec{x} \geq \max_{i \neq y}{\vec{w}^{(i)^T}\vec{x}} + 1$ or $i \neq y$ and $i \notin \arg\max_j{\vec{w}^{(j)^T} \vec{x}}$} \\
+-x & \text{if $\vec{w}^{(y)^T} \vec{x} < \max_{i \neq y}{\vec{w}^{(i)^T}\vec{x}} + 1$ and $i = y$} \\
++x & \text{otherwise}
+\end{cases}
+\end{equation*}
+i.e. zero if either the classification is correct or the
+weight does neither correspond to the class nor to the
+maximal prediction for the sample;
+minus $x$ if the weight corresponds to the class and does
+not classify correctly;
+plus $x$ if the weight does not correspond to the class
+but is the maximum prediction.

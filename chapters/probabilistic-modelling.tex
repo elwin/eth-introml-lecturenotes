@@ -1,2 +1,928 @@
 \chapter{Probabilistic Modelling}
-\todo{Probabilistic Modelling chapter}
+\todo{Fix this chapter}
+
+\section{Probabilistic Modelling}
+The goal of supervised learning is:
+Given training data $D = \{(\vec{x}_1, y_1), \dotsc, (\vec{x}_n, y_n)\}$,
+we want to identify a hypothesis $h : \mathcal{X} \to \mathcal{Y}$
+and minimise the prediction error (risk).
+The prediction error / true risk is
+defined according to some loss function
+$\ell$ and given as
+\begin{equation*}
+R(h) = \int{P(\vec{x}, y) \ell(y; h(\vec{x})) d\vec{x} dy}
+= \Exp_{\vec{X}, Y}[\ell(Y; h(\vec{X})]
+\end{equation*}
+
+The fundamental assumption is that
+the data set is generated i.i.d.,
+i.e.
+\begin{equation*}
+(\vec{x}_i, y_i) \overset{i.i.d.}{\sim} P(\vec{X}, Y)
+\end{equation*}
+
+In least squares regression,
+the risk is
+$R(h) = \Exp_{\vec{X}, Y}[(Y - h(\vec{X}))^2]$.
+Assuming the true distribution $P(\vec{X}, Y)$ is known,
+the $h$ minimising the risk is given as
+\begin{align*}
+\min_h{R(h)}
+&= \min_h{\Exp_{\vec{X}, Y}[(Y - h(\vec{X}))^2]} \\
+&= \min_h{\Exp_{\vec{X}}[\Exp_Y[(Y - h(\vec{x}))^2 \mid \vec{X} = \vec{x}]]} \\
+&= \Exp_{\vec{X}}[
+\min_{h(\vec{x})}{\Exp_Y[(Y-h(\vec{x})^2 \mid \vec{X} = \vec{x}]}
+]
+\end{align*}
+since $h$ can be considered independently for each $\vec{x}$.
+
+Now, for a fixed $\vec{x}$, the optimal prediction is
+\begin{equation*}
+y^*(\vec{x}) \in \arg\min_{\hat{y}}{
+	\underbrace{\Exp_Y[(\hat{y} - y)^2]}_{= \ell(\hat{y})}
+}
+\end{equation*}
+
+This leads to
+\begin{align*}
+\frac{d}{d \hat{y}} \ell(\hat{y}) &= \int{2 (\hat{y} - y) p(y \mid \vec{x}) dy} \overset{!}{=} 0 \\
+&\Rightarrow \underbrace{\int{\hat{y} \cdot p(y \mid \vec{x}) dy}}_{=\hat{y}} = \underbrace{\int{y \cdot p(y \mid \vec{x}) dy}}_{= \Exp[Y \mid \vec{X} = \vec{x}]} \\
+&\Leftrightarrow \hat{y} = \Exp[Y | \vec{X} = \vec{x}]
+\end{align*}
+
+Therefore, in least squares regression,
+the hypothesis minimising the true risk
+is given by the conditional mean
+\begin{equation*}
+h^*(\vec{x}) = \Exp[Y \mid \vec{X} = \vec{x}]
+\end{equation*}
+
+This hypothesis is called the
+\emph{Bayes' optimal predictor}.
+
+In practice, with finite data, one strategy
+is to estimate the conditional distribution
+\begin{equation*}
+\hat{P}(Y \mid \vec{X})
+\end{equation*}
+and for a test point $\vec{x}$ to
+predict the label
+\begin{equation*}
+\hat{y} = \hat{\Exp}[Y \mid \vec{X} = \vec{x}]
+= \int{y \cdot \hat{P}(y \mid \vec{X} = \vec{x}) dy}
+\end{equation*}
+
+
+\subsection{Conditional Maximum Likelihood Estimation}
+A common approach for conditional distribution estimation
+is to choose a particular \emph{parametric form}
+$\hat{P}(Y \mid \vec{X}, \theta)$
+and optimise the parameters using
+\emph{maximum conditional likelihood estimation}:
+\begin{equation*}
+\theta^* = \arg\max_\theta{
+	\hat{P}(y_1, \dotsc, y_n \mid \vec{x}_1, \dotsc, \vec{x}_n, \theta)
+}
+\end{equation*}
+By factoring the density (as the data is i.i.d.),
+by applying the logarithm and switching the sign,
+this is equivalent to minimising the
+\emph{negative log likelihood}
+\begin{equation*}
+\theta^* = \arg\min_\theta{
+	-\sum_{i=1}^n{\log{\hat{P}(y_i \mid \vec{x}_i, \theta)}}
+}
+\end{equation*}
+
+We denote the negative log likelihood by $L(\theta)$.
+
+MLE has several nice statistical properties:
+\begin{description}
+	\item[Consistency]: Parameter estimate
+	converges to true parameters in probability.
+	\item[Asymptotic efficiency]: Smallest
+	variance among all well-behaved estimators
+	for large $n$.
+	\item[Asymptotic normality]
+\end{description}
+
+
+\subsubsection{Example: Regression with Gaussian Noise}
+Assume $Y = h(\vec{X}) + \epsilon$,
+$\epsilon \sim \mathcal{N}(0, \sigma^2)$ 
+(with known $\sigma^2$) and
+$h(\vec{x}) = \vec{w}^T \vec{x}$.
+I.e., the model is linear and noise is Gaussian
+with known variance.
+
+Then,
+$\hat{p}(y \mid \vec{X} = \vec{x}) = \mathcal{N}(y; \vec{w}^T \vec{x}, \sigma^2)$
+and
+\begin{equation*}
+\hat{\vec{w}} = \arg\min_{\vec{w}}{L(\vec{w})}
+= \arg\min_{\vec{w}}{
+	-\sum_{i=1}^n{\log{\hat{p}(y_i \mid \vec{x}_i, \vec{w}, \sigma^2)}}
+}
+\end{equation*}
+
+Furthermore,
+\begin{align*}
+- \log{\hat{p}(y_i \mid \vec{x}_i, \vec{w}, \sigma^2)}
+&= -\log{\mathcal{N}(y; \vec{w}^T \vec{x}, \sigma^2)} \\
+&= -\log{\frac{1}{\sqrt{2 \pi \sigma^2}} \exp{
+		\left( -\frac{(y - \vec{w}^T \vec{x})^2}{2 \sigma^2} \right)
+}} \\
+&= \frac{1}{2} \log{(2 \pi \sigma^2)} + \frac{1}{2 \sigma^2} (y-\vec{w}^T \vec{x})^2
+\end{align*}
+and therefore
+\begin{align*}
+\hat{\vec{w}} &= \arg\min_{\vec{w}}{
+	\sum_{i=1}^n{\frac{1}{2} \log{(2 \pi \sigma^2)} + \frac{1}{2 \sigma^2} (y_i-\vec{w}^T \vec{x}_i)^2}
+} \\
+&= \arg\min_{\vec{w}}{
+	\underbrace{\frac{n}{2} \log{(2 \pi \sigma^2)}}_{= \text{const w.r.t. $\vec{w}$}}
+	+ \frac{1}{2 \sigma^2} \sum_{i=1}^n{(y_i - \vec{w}^T \vec{x}_i)^2}
+} \\
+&= \arg\min_{\vec{w}}{\sum_{i=1}^n{(y_i - \vec{w}^T \vec{x}_i)^2}}
+\end{align*}
+
+Thus, under the conditional linear Gaussian assumption,
+maximising the likelihood is equivalent
+to least squares regression.
+
+
+\subsubsection{MLE for i.i.d. Gaussian noise}
+The above example holds more general.
+
+Suppose $\mathcal{H} = \{h : \mathcal{X} \to \R\}$
+is a class of functions.
+Further assume
+\begin{equation*}
+P(Y = y \mid \vec{X} = \vec{x}) =
+\mathcal{N}(y \mid h^*(\vec{x}), \sigma^2)
+\end{equation*}
+for some $h^* \in \mathcal{H}$ and some $\sigma^2 > 0$.
+
+The MLE for data $D = \{(\vec{x}_1, y_1), \dotsc, (\vec{x}_n, y_n)\}$
+is given by
+\begin{equation*}
+\hat{h} = \arg\min_{h \in \mathcal{H}}{
+	\sum_{i=1}^n{(y_i - h(\vec{x}_i))^2}
+}
+\end{equation*}
+
+Thus, the MLE is given by the least squares
+solution, assuming noise is iid Gaussian
+with constant variance.
+
+
+\subsection{Bias-Variance Tradeoff}
+While MLEs have nice statistical properties,
+those only hold for $n \to \infty$.
+For finite $n$, overfitting must be avoided.
+
+The bias variance tradeoff states
+for the sum of squared errors that
+\begin{equation*}
+\text{Prediction error} = \text{Bias}^2 + \text{Variance} + \text{Noise}
+\end{equation*}
+where
+\begin{description}
+	\item[Bias] is the excess risk of the best
+	\emph{considered} model,
+	compared to minimal achievable risk
+	knowing $P(\vec{X}, Y)$
+	(i.e. given infinite data).
+	Going away from the Bayes' optimal
+	prediction, i.e. restricting function
+	class, increases bias.
+	\item[Variance] is the risk incurred
+	due to estimating using finite data
+	\item[Noise] is the risk incurred by
+	optimal model (i.e. irreducible error)
+\end{description}
+
+Usually, bias and variance have to be traded
+via model selection and regularisation.
+High bias corresponds to underfitting
+while high variance corresponds to overfitting.
+
+The MLE solution depends on the training data $D$,
+i.e. $\hat{h} = \hat{h}_D$.
+
+We want to chose $\mathcal{H}$ to have small bias,
+i.e. have small squared error on average:
+\begin{equation*}
+\Exp_{\vec{X}}[
+\underbrace{\Exp_D[\hat{h}_D(\vec{X})] - h^*(\vec{X})}_{\text{Bias}}
+]^2
+\end{equation*}
+
+The estimator itself is random and
+thus has some variance:
+\begin{equation*}
+\Exp_{\vec{X}}[\Var_D[\hat{h}_D(\vec{X})]^2]
+= \Exp_{\vec{X}}[
+\Exp_D[(
+\hat{h}_D(\vec{X}) - \Exp_{D'}[\hat{h}_{D'}(\vec{X})]
+)^2]
+]
+\end{equation*}
+TODO: No idea if the variance formula is correct...
+
+Even if the Bayes' optimal hypothesis $h^*$ is
+known, we would still incur some error du to noise:
+\begin{equation*}
+\Exp_{\vec{X}, Y}[
+(Y - h^*(\vec{X}))^2
+]
+\end{equation*}
+
+Ultimately, for least squares regression it holds that
+\begin{align*}
+\underbrace{\Exp_D[\Exp_{\vec{X}, Y}[
+	(Y - \hat{h}_D(\vec{X}))^2
+	]]}_{\text{Expected risk}}
+\end{align*}
+TODO: Week 18, slide 20
+
+The MLE for linear regression is unbiased
+if $h^* \in \mathcal{H}$.
+Furthermore, it is the minimum variance
+estimator among all unbiased estimators.
+However, it may still overfit.
+Thus, we can trade a small amount of bias
+for a potentially large reduction in variance
+by using regularisation.
+
+
+\subsection{Maximum a Posteriori Estimate}
+Bias can be introduced by expressing assumptions / a belief
+on the parameters.
+This is done using a \emph{Bayesian prior}.
+
+Assume the parameters $\theta$ are from a known
+\emph{prior distribution} which is fixed before any data
+is observed.
+Particularly, $\theta$ and the $\vec{X}_i$ are independent.
+
+Then, the \emph{posterior distribution} of the parameter
+$\theta$ is given using Bayes' rule
+and $P(\theta \mid \vec{x}_{1:n}) = P(\theta)$ as
+\begin{equation*}
+\underbrace{
+	P(\theta \mid y_{1:n}, \vec{x}_{1:n})}_\text{posterior}
+= \frac{
+	\overbrace{P(\theta)}^\text{prior}
+	\overbrace{
+		P(y_{1:n} \mid \theta, \vec{x}_{1:n})}^\text{likelihood}
+}{
+	P(y_{1:n} \mid \vec{x}_{1:n})
+}
+\end{equation*}
+
+Finally, the \emph{maximum a posteriori (MAP) estimate}
+is obtained by maximising $P(\theta \mid y_{1:n}, \vec{x}_{1:n})$
+(or equivalently minimising the negative log term).
+Note that $P(y_{1:n} \mid \vec{x}_{1:n})$ is constant w.r.t.
+$\theta$ and can thus be ignored during optimisation.
+
+MLE is a special case of MAP estimation.
+Choosing a uniform parameter prior during
+MAP estimation results in MLE.
+
+
+\subsubsection{Example: Ridge Regression}
+Assume $\theta = \vec{w} \sim \mathcal{N}(0, \beta^2 \vec{I})$,
+i.e. the $w_i \sim \mathcal{N}(0, \beta^2)$ independently.
+
+Then,
+\begin{equation*}
+\arg\max_{\vec{w}}{
+	P(\vec{w} \mid \vec{x}_{1:n}, y_{1:n})
+}
+= \arg\min_{\vec{w}}{
+	-\log{P(\vec{w})}
+	-\log{P(y_{1:n} \mid \vec{x}_{1:n}, \vec{w})}
+	+ \underbrace{\log{P(y_{1:n} \mid \vec{x}_{1:n})}}_\text{constant w.r.t. $\vec{w}$}
+}
+\end{equation*}
+
+For the negative prior log likelihood, we have
+\begin{align*}
+-\log{P(\vec{w})} &=
+-\log{\prod_{i=1}^d{P(w_i)}} \\
+&= - \sum_{i=1}^d{\log{\mathcal{N}(w_i ; 0, \beta^2)}} \\
+&= - \sum_{i=1}^d{\log{
+		\frac{1}{\sqrt{2 \pi \beta^2}}
+		\exp{\left( -\frac{w_i^2}{2 \beta^2} \right)}
+}} \\
+&= \frac{d}{2} \log{2 \pi \beta^2}
++ \frac{1}{2 \beta^2} \sum_{i=1}^d{w_i^2} \\
+&= \text{const} + \frac{1}{2 \beta^2} \norm{\vec{w}}_2^2
+\end{align*}
+
+Combining the above form with the already known negative log
+likelihood of a linear model with Gaussian noise, we get
+\begin{align*}
+& \arg\min_{\vec{w}}{
+	-\log{P(\vec{w})}
+	-\log{P(y_{1:n} \mid \vec{x}_{1:n}, \vec{w})}
+} \\
+&= \arg\min_{\vec{w}}{
+	\frac{1}{2\beta^2} \norm{\vec{w}}_2^2
+	+ \frac{1}{2\sigma^2} \sum_{i=1}^n{(y_i - \vec{w}^T \vec{x}_i)^2}
+} \\
+&= \arg\min_{\vec{w}}{
+	\underbrace{\frac{\sigma^2}{\beta^2}}_\lambda \norm{\vec{w}}_2^2
+	+ \sum_{i=1}^n{(
+		y_i - \vec{w}^T \vec{x}_i
+		)^2}
+}
+\end{align*}
+
+Therefore, ridge regression is MAP estimation
+for a linear regression problem, assuming that
+the noise $P(y \mid \vec{x}, \vec{w})$ is
+i.i.d. Gaussian and the prior $P(\vec{w})$
+is Gaussian.
+
+$\lambda$ is the ratio between the noise variance
+and the prior variance.
+Thus, a large $\lambda$ means that we believe to
+have a lot of noise or the weights to be close to zero.
+
+
+\subsubsection{Example: Lasso Regression}
+Lasso regression / $L_1$-regularised linear regression
+corresponds to a linear regression problem with Gaussian
+noise and a Laplace parameter prior.
+
+The density of a (univariate) Laplace distribution is given as
+\begin{equation*}
+p(x; \mu, b) = \frac{1}{2b} \exp{\left(
+	-\frac{|x - \mu|}{b}
+	\right)}
+\end{equation*}
+
+The Laplace distribution has a spike around $\mu$.
+With $\mu = 0$, this should bias the weights to be exactly zero.
+However, the Laplace prior might not be optimal
+for sparse solutions as we get non-zero weights
+with probability 1 (it is continuous).
+
+TODO: Slide 30.
+The probability for a Gaussian distribution to have values far off from the mean is very low,
+exponentially low.
+The student-t distribution is heavier tailed, thus has only polynomial decay.
+This can help substantially for robustness towards outliers.
+Gaussian likelihood assumes that all points are very close to the prediction.
+This is generally not true, especially if we have large outliers.
+In those cases, we should use a different loss function,
+i.e. replacing Gaussian with a more heavier-tailed distribution.
+
+TODO: student's t-distribution slides 19, p. 9
+
+\subsection{Regularisation via MAP inference}
+Regularised estimation can often be understood as MAP inference.
+The loss corresponds to the likelihood,
+the regulariser to the parameter prior.
+This leads to the form
+\begin{equation*}
+\arg\min_{\vec{w}}{
+	\sum_{i=1}^n{\ell(\vec{w}^T \vec{x}_i; \vec{x}_i, y_i)}
+	+ C(\vec{w})
+}
+= \arg\max_{\vec{w}}{
+	\prod_{i=1}^n{P(y_i \mid \vec{x}_i, \vec{w})} P(\vec{w})
+}
+= \arg\max_{\vec{w}}{P(\vec{w} \mid D)}
+\end{equation*}
+where
+\begin{align*}
+C(\vec{w}) &= - \log{P(\vec{w})} \\
+\ell(\vec{w}^T \vec{x}_i; \vec{x}_i, y_i)
+&= -\log{P(y_i \mid \vec{x}_i, \vec{w})}
+\end{align*}
+
+This allows to exchange priors (regularisers)
+and likelihoods (loss functions).
+
+
+\subsection{Classification}
+In classification, the risk is
+\begin{equation*}
+R(h) = \Exp_{\vec{X}, Y}[
+\underbrace{[Y \neq h(\vec{X})]}_\text{$1$ if $Y \neq H(\vec{X})$, $0$ otherwise}
+]
+\end{equation*}
+
+Assuming $P(\vec{X}, Y)$ is known,
+and $(\vec{x}_i, y_i) \sim P(\vec{X}, Y)$ iid,
+we get
+\begin{align*}
+h^*(\vec{x}) &= \arg\min_{\hat{y}}{
+	\Exp_Y[[Y \neq \hat{y}] \mid \vec{X} = \vec{x}]
+} \\
+&= \arg\min_{\hat{y}}{
+	\sum_{y=1}^c{P(Y = y \mid \vec{X} = \vec{x}) \cdot [y \neq \hat{y}] }
+} \\
+&= \arg\min_{\hat{y}}{
+	\sum_{y : y \neq \hat{y}}{P(Y = y \mid \vec{X} = \vec{x})}    
+} \\
+&= \arg\min_{\hat{y}}{1 - P(Y = \hat{y} \mid \vec{X} = \vec{x})} \\
+&= \arg\max_{\hat{y}}{P(Y = \hat{y} \mid \vec{X} = \vec{x})}
+\end{align*}
+
+Thus, the \emph{Bayes' optimal predictor} (classifier)
+is given by the most probable class:
+\begin{equation*}
+h^*(\vec{x}) = \arg\max_y{P(Y = y \mid \vec{X} = \vec{x})}
+\end{equation*}
+A natural approach is therefore again to estimate $P(Y \mid \vec{X})$.
+
+
+\subsection{MAP Learning Summary}
+To summaries, learning through MAP inference
+works as follows:
+\begin{enumerate}
+	\item Start with i.i.d. assumption
+	on data points (can be relaxed).
+	\item Choose likelihood function
+	(results in loss).
+	\item Choose prior distribution
+	(results in regulariser).
+	\item Optimise for MAP parameters.
+	\item Choose hyperparameters
+	via cross-validation.
+	\item Make predictions via Bayesian
+	decision theory.
+\end{enumerate}
+
+
+\section{Logistic Regression}
+The idea of logistic regression is to use a
+(generalised) linear model for the class
+probability.
+The hyperplane defines the decision boundary,
+all points on the positive side correspond
+to the positive class, on the other side
+to the negative class.
+
+Therefore, $Y \in \{+1, -1\}$ and
+$P(Y = +1 \mid \vec{X} = \vec{x}) = \sigma(\vec{w}^T \vec{x})$
+where $\sigma$ is the logistic sigmoid function
+\begin{equation*}
+\sigma(\vec{w}^T \vec{x})
+= \frac{1}{1 + \exp{(-\vec{w}^T \vec{x})}}
+\end{equation*}
+This is called the \emph{link function}.
+
+TODO: Move this somewhere else? Maybe to prob. modelling?
+This relates to \emph{generalised linear models}.
+A generalised linear model is a model with
+a linear decision boundary $\vec{w}^T \vec{x} + w_0$.
+A link function converts the mean
+of a distribution to a linear predictor,
+and the mean function converts the linear
+predictor into a mean.
+TODO: Isn't sigmoid actually the mean function,
+and logit the link function?
+TODO: Link function for Poisson.
+
+From $P(Y = -1 \mid \vec{X} = \vec{x}) = 1 - P(Y = +1 \mid \vec{X} = \vec{x})$ we get
+\begin{equation*}
+P(Y = y \mid \vec{X} = \vec{x})
+= \sigma(y \vec{w}^T \vec{x})
+= \frac{1}{1 + \exp{(-y \vec{w}^T \vec{x})}}
+\end{equation*}
+
+The resulting model assumption is
+\begin{equation*}
+P(y \mid \vec{x}, \vec{w}) = Ber(y; \sigma(\vec{w}^T \vec{x}))
+\end{equation*}
+i.e. linear with Bernoulli noise.
+
+
+\subsection{Maximum Likelihood Estimate}
+If $\vec{w}$ and the $\vec{x}_i$ are independent,
+it holds that
+\begin{equation*}
+P(y_i \mid \vec{x}_i, \vec{w})
+= \frac{P(y_i, \vec{x}_i \mid \vec{w})}{P(\vec{x}_i \mid \vec{w})}
+= \frac{P(y_i, \vec{x}_i \mid \vec{w})}{P(\vec{x}_i)}
+= \text{const} \cdot P(y_i, \vec{x}_i \mid \vec{w})
+\end{equation*}
+From that, and by assuming the samples are i.i.d.,
+we can again minimise the conditional negative log likelihood
+\begin{equation*}
+\arg\max_{\vec{w}}{P(D \mid \vec{w})}
+= \arg\max_{\vec{w}}{P(y_{1:n} \mid \vec{x}_{1:n}, \vec{w})}
+= \arg\min_{\vec{w}}{-\sum_{i=1}^n{
+		\log{P(y_i \mid \vec{x}_i, \vec{w})}
+}}
+\end{equation*}
+
+The negative log likelihood of a single sample is
+\begin{equation*}
+-\log{P(y_i \mid \vec{x}_i, \vec{w})}
+= -\log{\frac{1}{1 + \exp{(-y \vec{w}^T \vec{x})}}}
+= \log{(1 + \exp{(-y \vec{w}^T \vec{x})})}
+\end{equation*}
+
+This results in the \emph{logistic loss} function:
+\begin{equation*}
+\ell_\text{logistic}(\vec{w}; \vec{x}, y) =
+\log{(1 + \exp{(- y \vec{w}^T \vec{x})})}
+\end{equation*}
+
+The empirical risk is thus given as
+\begin{equation*}
+\hat{R}(\vec{w}) = \sum_{i=1}^n{
+	\log{(1 + \exp{(-y_i \vec{w}^T \vec{x}_i)})}
+}
+\end{equation*}
+
+The logistic loss is convex and can
+therefore be optimised using SGD and
+similar techniques.
+It is for very large and very small
+$z$, it is approximately linear and
+corresponds to the perceptron loss.
+However, its derivative is never
+exactly zero, and correct classifications
+close to the decision boundary
+($z \approx 0$) still exhibit
+a significant loss.
+
+The gradient of the logistic loss is
+\begin{equation*}
+\nabla_{\vec{w}} \ell_\text{logistic}
+= \underbrace{\frac{\exp{(-y\vec{w}^T \vec{x})}}{1+\exp{(-y \vec{w}^T \vec{x})}}}_{1 - P(Y = y \mid \vec{x})} \cdot (-y \vec{x})
+= \underbrace{\frac{1}{1 + \exp{(y \vec{w}^T \vec{x})}}}_{P(Y \neq y \mid \vec{x})} \cdot (-y \vec{x})
+\end{equation*}
+
+The SGD update step is thus
+\begin{equation*}
+\vec{w} \gets \vec{w} + \eta_t \cdot y \cdot \vec{x} \cdot P(Y = -y \mid \vec{x}, \vec{w})
+\end{equation*}
+
+
+\subsection{Maximum a Posteriori Estimate / Regularisation}
+Similar to linear regression, we can perform
+MAP estimation / use a regulariser.
+
+Using a Gaussian prior on the weights,
+corresponding to $L_2$ regularisation,
+results in the objective
+\begin{equation*}
+\arg\min_{\vec{w}}{
+	\sum_{i=1}^n{\log{(1 + \exp{(-y_i \vec{w}^T \vec{x}_i)})}}
+	+ \lambda \norm{\vec{w}}_2^2
+}
+\end{equation*}
+
+Using a Laplace prior on the weights,
+corresponding to $L_1$ regularisation,
+results in the objective
+\begin{equation*}
+\arg\min_{\vec{w}}{
+	\sum_{i=1}^n{\log{(1 + \exp{(-y_i \vec{w}^T \vec{x}_i)})}}
+	+ \lambda \norm{\vec{w}}_1
+}
+\end{equation*}
+
+The weight-update step for $L_2$ regularised
+logistic regression is
+\begin{equation*}
+\vec{w} \gets \vec{w}(1 - 2 \lambda \eta_t) + \eta_t \cdot y \cdot \vec{x} \cdot \hat{P}(Y = -y \mid \vec{w}, \vec{x})
+\end{equation*}
+
+After finding the optimal $\hat{\vec{w}}$,
+prediction is done using the conditional
+distribution $P(y \mid \vec{x}, \hat{\vec{w}})$,
+which corresponds to predicting
+\begin{equation*}
+\hat{y} = sign(\hat{\vec{w}}^T \vec{x})
+\end{equation*}
+
+
+\subsection{Kernelised Logistic Regression}
+Logistic regression can also be kernelised.
+
+Let $\vec{K}$ be the Gram matrix and
+$\vec{K}_i$ its $i$-th column.
+
+The optimisation objective is
+\begin{equation*}
+\hat{\vec{\alpha}} = \arg\min_{\vec{\alpha}}{
+	\sum_{i=1}^n{
+		\log{\left( 1 + \exp{(-y_i \vec{\alpha}^T \vec{K}_i)} \right)}
+		+ \lambda \vec{\alpha}^T \vec{K} \vec{\alpha}
+	}
+}
+\end{equation*}
+
+Classification is then done using the conditional distribution
+\begin{equation*}
+\hat{P}(y \mid \vec{x}, \hat{\vec{\alpha}}) =
+\frac{1}{1 + \exp{(-y 
+		\underbrace{\sum_{j=1}^n{\hat{\alpha}_j k(\vec{x}_j, \vec{x})}}_{= \vec{w}^T \vec{x}}
+		)}}
+\end{equation*}
+and we can again predict the more likely class as
+\begin{equation*}
+\hat{y} = sign\left(\sum_{j=1}^n{\hat{\alpha}_j k(\vec{x}_j, \vec{x})}\right)
+\end{equation*}
+
+
+\subsection{Multi-Class Logistic Regression}
+Logistic regression can be extended to the
+multi-class setting.
+The assumed distribution is then
+the categorical distribution instead
+of Bernoulli.
+
+Let $c$ be the number of classes.
+We maintain one weight vector
+$\vec{w}_i$ for each class $i \in \{1, \dotsc, c\}$.
+The respective class probability is modelled
+proportional to the total class probabilities.
+The function used is called the
+\emph{Softmax} function and defined as
+\begin{equation*}
+P(Y = i \mid \vec{x}, \vec{w}_1, \dotsc, \vec{w}_c)
+= \frac{\exp{(\vec{w}_i^T \vec{x})}}{
+	\sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x})}}
+}
+= \hat{p}_i
+\end{equation*}
+with $\sum_{i=1}^c{\hat{p}_i} = 1$.
+This is a strict generalisation of a binary model.
+
+The solution is not unique.
+If some scalar $\tau$ is added to each prediction
+it does not change:
+\begin{equation*}
+\frac{\exp{(\vec{w}_i^T \vec{x} + \tau)}}{
+	\sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x} + \tau)}}
+}
+= \frac{e^\tau \cdot \exp{(\vec{w}_i^T \vec{x})}}{
+	e^\tau \cdot \sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x})}}
+}
+= \frac{\exp{(\vec{w}_i^T \vec{x})}}{
+	\sum_{j=1}^c{\exp{(\vec{w}_j^T \vec{x})}}
+}
+\end{equation*}
+Uniqueness can be enforced by setting
+one weight vector to zero
+(e.g. $\vec{w}_c$) which corresponds
+to setting $\tau = -\vec{w}_c^T \vec{x}$
+and $\vec{w}_i \gets \vec{w}_i - \vec{w}_c^T \vec{x}$.
+
+This results in the cross-entropy loss
+\begin{equation*}
+\ell_{CE}(y ; \vec{x}, \vec{w}_1, \dotsc, \vec{w}_c)
+= - \log{P(Y = y \mid \vec{x}, \vec{w}_1, \dotsc, \vec{w}_c)}
+\end{equation*}
+
+TODO: Gradient of cross-entropy loss, Homework 6.
+
+TODO: Softmax in ANN
+
+TODO: Cross entropy in ANN
+
+If we add a $\tau$ to each argument, the $e^\tau$ is going to cancel out,
+thus we keep the original distribution.
+W.l.o.g. we can pick $\tau = -w_c^T x$ which corresponds to setting one weight vector
+(e.g. the last one) to $0$.
+TODO: Slide 29, multi-class logistic regression summary.
+Setting $w_c$ to $0$ forces uniqueness.
+This is called the cross-entropy loss.
+
+
+\subsection{Comparison to SVM}
+SVMs result in sparse solutions.
+This means that most of the $\alpha_i$ are zero.
+This does not hold for logistic regression as
+most of its $\alpha_i$ are non-zero.
+
+SVMs also sometimes result in higher classification
+accuracy. However, logistic regression provides
+class probabilities which is difficult in SVMs.
+
+
+\section{Bayesian Decision Theory}
+Let $P(y \mid \vec{x})$ be a conditional
+distribution over labels,
+$\mathcal{A}$ a \emph{set of actions},
+and $C : \mathcal{Y} \times \mathcal{A} \to \R$
+be a \emph{cost function}.
+
+\emph{Bayesian decision theory} (BDT)
+recommends to
+pick the action which minimises the
+\emph{expected cost}:
+\begin{equation*}
+a^* =
+\arg\min_{a \in \mathcal{A}}{
+	\Exp_y[C(y, a) \mid \vec{x}]
+}
+\end{equation*}
+
+If the true distribution $P(y \mid \vec{x})$
+was known, this decision implements the
+\emph{Bayes optimal decision}.
+However, in practice, the distribution
+can only be estimated.
+If the action set is discrete,
+calculations are often simplified
+by calculating the expected cost
+for each action individually
+and then comparing them.
+
+
+\subsection{Example: Logistic Regression}
+In logistic regression,
+the estimated conditional distribution is
+\begin{equation*}
+\hat{P}(y \mid \vec{x}) =
+Ber(y ; \sigma(\hat{\vec{w}}^T \vec{x}))
+\end{equation*}
+the action set is
+$\mathcal{A} = \{+1, -1\}$ and
+the cost function
+$C(y, a) = [y \neq a]$.
+
+Then, the action which minimises the
+expected cost is the most likely class:
+\begin{align*}
+a^* &=
+\arg\min_{a \in \mathcal{A}}{
+	\Exp_y[C(y, a) \mid \vec{x}]
+} \\
+&= \arg\max_y{\hat{P}(y \mid \vec{x})} \\
+&= sign(\vec{w}^T \vec{x})
+\end{align*}
+
+
+\subsection{Asymmetric Costs}
+Logistic regression is used again,
+however, with asymmetric cost.
+The estimated conditional distribution is
+\begin{equation*}
+\hat{P}(y \mid \vec{x}) =
+Ber(y ; \sigma(\hat{\vec{w}}^T \vec{x}))
+\end{equation*}
+the action set is
+$\mathcal{A} = \{+1, -1\}$ and
+the cost function is
+\begin{equation*}
+C(y, a) =
+\begin{cases}
+c_{FP} & \text{if $y = -1$ and $a = +1$} \\
+c_{FN} & \text{if $y = 1$ and $a = -1$} \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation*}
+
+Let $p = P(Y = +1 \mid \vec{x})$ be the
+probability of a positive classification
+for the input $\vec{x}$.
+We can now defined the costs of positive
+predictions as
+\begin{equation*}
+c_+ = \Exp_y[C(y, +1) \mid \vec{x}]
+= (1 - p) \cdot c_{FP} + p \cdot 0
+\end{equation*}
+and for negative predictions as
+\begin{equation*}
+c_- = \Exp_y[C(y, -1) \mid \vec{x}]
+= (1 - p) \cdot 0 + p \cdot c_{FN}
+\end{equation*}
+
+The optimal prediction for the estimated
+distribution 
+(using $p = P(y = +1 \mid \vec{x})$)
+is then given as
+\begin{align*}
+\text{predict} \hat{y} = +1
+&\Leftrightarrow c_+ < c_- \\
+&\Leftrightarrow (1-p) \cdot c_{FP} < p \cdot c_{FN} \\
+&\Leftrightarrow p > \frac{c_{FP}}{c_{FP} + c_{FN}}
+\end{align*}
+
+
+\subsection{Uncertainty}
+Logistic regression is used again,
+however, with an additional doubt action.
+The estimated conditional distribution is
+\begin{equation*}
+\hat{P}(y \mid \vec{x}) =
+Ber(y ; \sigma(\hat{\vec{w}}^T \vec{x}))
+\end{equation*}
+The action set is now
+$\mathcal{A} = \{+1, -1, D\}$
+where $D$ stands for \emph{doubt}.
+For some doubt penalty $c$, the
+new cost function is
+\begin{equation*}
+C(y, a) =
+\begin{cases}
+[a \neq y] & \text{if $a \in \{+1, -1\}$} \\
+c & \text{if $a = D$}
+\end{cases}
+\end{equation*}
+
+Then, the action minimising the expected
+cost is given by
+\begin{equation*}
+a^* = \begin{cases}
+y & \text{if $\hat{P}(y \mid \vec{x}) \geq 1 - c$} \\
+D & \text{otherwise}
+\end{cases}
+\end{equation*}
+
+
+\subsection{Example: Least-Squares Regression}
+In least-squares regression,
+the estimated conditional distribution is
+\begin{equation*}
+\hat{P}(y \mid \vec{x}) =
+\mathcal{N}(y ; \hat{\vec{w}}^T \vec{x}, \sigma^2)
+\end{equation*}
+the action set is
+$\mathcal{A} = \R$ and
+the cost function
+$C(y, a) = (y - a)^2$.
+
+Then, the action which minimises the
+expected cost is the conditional mean:
+\begin{align*}
+a^* &=
+\arg\min_{a \in \mathcal{A}}{
+	\Exp_y[C(y, a) \mid \vec{x}]
+} \\
+&= \Exp[y \mid \vec{x}] \\
+&= \int{y \cdot \hat{P}(y \mid \vec{x}) dy} \\
+&= \hat{\vec{w}}^T \vec{x}
+\end{align*}
+
+If we chose an asymmetric cost
+\begin{equation*}
+C(y, a) =
+\underbrace{c_1 \max{(y - a, 0)}}_\text{underestimation}
++
+\underbrace{c_2 \max{(a - y, 0)}}_\text{overestimation}
+\end{equation*}
+then the action which minimises the
+expected cost is
+\begin{equation*}
+a^* = \hat{\vec{w}}^T \vec{x}
++ \sigma \cdot \Phi^{-1}\left(
+\frac{c_1}{c_1 + c_2}
+\right)
+\end{equation*}
+This shifts the prediction according
+to the costs.
+
+
+\subsection{Active Learning}
+The goal of active learning is to minimise
+the number of required labels.
+The general idea is to pick examples
+which the estimated conditional distribution
+is most uncertain about.
+This requires a uncertainty score $u_j$.
+A simple one is
+$u_j = -|\hat{P}(y_j = +1 \mid \vec{x}_j) - 0.5|$.
+The most uncertain example is then
+$j^* = \arg\max_j{u_j}$.
+
+Given a pool of unlabelled examples
+$D_X = \{\vec{x}_1, \dotsc, \vec{x}_n\}$
+and an initially empty set of labelled
+samples $D$.
+For $t = 1, 2, \dotsc$, first
+estimate $\hat{P}(Y \mid \vec{x})$
+given the current data set $D$.
+Then, pick the unlabelled example which
+the current estimate is most uncertain
+about:
+\begin{equation*}
+i_t \in \arg\min_i{
+	|0.5 - \hat{P}(Y_i \mid \vec{x}_i)|
+}
+\end{equation*}
+Finally, query the label $y_{i_t}$
+and update the data set
+$D \gets D \cup \{(\vec{x}_{i_t}, y_{i_t})\}$.
+
+Active learning violates the i.i.d.
+assumption!
+It can thus get stuck with bad models.
+There are also more advance selection
+criteria,
+e.g. querying the point which reduces
+uncertainty of other points as much
+as possible.

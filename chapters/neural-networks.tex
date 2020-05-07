@@ -1,2 +1,520 @@
 \chapter{Neural Networks}
-\todo{Neural Networks chapter}
+\todo{Fix this chapter}
+
+
+\section{Neural Networks}
+Using kernel methods has the advantage of resulting in rich
+feature maps and being able to fit any function with infinite data.
+However, choosing the right kernel is challenging and the
+computational complexity grows with the size of the data.
+
+The key idea is to parameterise the feature maps.
+Thus, instead of finding
+\begin{equation*}
+\vec{w}^* = \arg\min_{\vec{w}}{
+	\sum_{i=1}^n{\ell\left(y_i; \sum_{j=1}^m{w_j \phi_j(\vec{x}_i)} \right)}
+}
+\end{equation*}
+we also optimise over the parameters:
+\begin{equation*}
+\vec{w}^* = \arg\min_{\vec{w}, \vec{\theta}}{
+	\sum_{i=1}^n{\ell\left(y_i; \sum_{j=1}^m{w_j \phi(\vec{x}_i, \theta_j)} \right)}
+}
+\end{equation*}
+
+The feature maps in neural networks are of the form
+\begin{equation*}
+\phi(\vec{x}, \vec{\theta})
+= \varphi(\underbrace{\vec{\theta}^T \vec{x}}_{z})
+\end{equation*}
+where $\vec{\theta} \in \R^d$ and
+$\varphi : \R \to \R$ is an activation function.
+
+The term \emph{artificial neural networks (ANN)} /
+\emph{multi-layer Perceptrons} refers to nonlinear functions
+which are nested compositions of (variable) linear functions
+with (fixed) nonlinearities.
+
+The \emph{Universal Approximation Theorem} states that,
+TODO: UAT
+
+\emph{Input layer} refers to the values of $\vec{x}$.
+\emph{Output layer} refers to the outputs of the network
+and is denoted by $\vec{f}$.
+\emph{Hidden layers} are of the form
+\begin{equation*}
+v_i^{(l)} = \varphi(\vec{w}_i^{(l)^T} \vec{v}^{l-1})
+\end{equation*}
+$v_i^{(l)}$ denotes the $i$-th entry of the $l$-th hidden layer
+($\vec{v}^{(0)} = \vec{x}$).
+$w_{i,j}^{(l)}$ refers to the weight connecting unit
+$i$ of layer $l$ to unit $j$ of the previous layer $l-1$.
+The number of layers (excluding input) is written as
+$L$ (there are $L - 1$ hidden layers).
+
+Units are indexed by indexing first within the units of a layer
+and then layer by layer.
+
+
+\subsection{Activation Functions}
+\subsubsection{Logistic Sigmoid}
+The \emph{(logistic) Sigmoid} activation function is
+\begin{equation*}
+\varphi(z) = \frac{1}{1 + \exp{(-z)}}
+= \frac{\exp{(z)}}{\exp{(z)} + 1}
+\end{equation*}
+It has the range $\varphi : \R \to (0, 1)$
+and $\varphi(0) = 0.5$.
+It behaves almost linear between some threshold,
+almost constant outside of it.
+
+A sigmoidal function is a bounded, differentiable, real function
+that is defined for all real input values and has a non-negative
+derivative at each point.
+Often, the logistic function (Sigmoid activation) is implied.
+
+The derivative is
+\begin{equation*}
+\varphi'(z)
+= \frac{\exp{(-z)}}{1 + \exp{(-z)}} \cdot \frac{1}{1 + \exp{(-z)}}
+= \varphi(z) \cdot (1 - \varphi(z))
+\end{equation*}
+It is approximately zero unless $z$ is approximately zero,
+thus often leading to vanishing gradients for deep models.
+
+\subsubsection{tanh}
+The \emph{tanh} activation function is a version of Sigmoid, 
+centred around zero, given as
+\begin{equation*}
+\varphi(z)
+= \frac{\exp{(z)} - \exp{(-z)}}{\exp{(z)} + \exp{(-z)}}
+\end{equation*}
+It has the range $\varphi : \R \to (-1, 1)$
+and $\varphi(0) = 0$.
+
+It holds that $\varphi(z) = - \varphi(-z)$.
+
+\subsubsection{ReLU}
+The \emph{ReLU} activation is given as
+\begin{equation*}
+\varphi(z) = \max(z, 0)
+\end{equation*}
+i.e. it is zero for negative values, linear otherwise.
+
+The derivative is
+\begin{equation*}
+\varphi'(z) =
+\begin{cases}
+1 & \text{if $z > 0$} \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation*}
+It is not differentiable at zero.
+
+\subsubsection{Leaky ReLU}
+The \emph{leaky ReLU} activation is given as
+\begin{equation*}
+\varphi(z) = \max(z, \alpha z)
+\end{equation*}
+with $\alpha < 1$ being small, e.g. $10^{-3}$.
+Its advantage is that the gradient does not
+vanish for $z < 0$.
+
+The derivative, assuming $0 < \alpha < 1$, is
+\begin{equation*}
+\varphi'(z) =
+\begin{cases}
+1 & \text{if $z > 0$} \\
+\alpha & \text{otherwise}
+\end{cases}
+\end{equation*}
+It is not differentiable at zero.
+
+
+\subsection{Forward Propagation}
+Forward propagation performs the calculations layer by layer.
+It can be written in matrix notation by combining the
+$\vec{w}_i^{(l)}$ into a matrix
+\begin{equation*}
+\vec{W}^{(l)} =
+\begin{pmatrix}
+\vec{w}_1^{(l)} \\
+\vdots \\
+\vec{w}_m^{(l)}
+\end{pmatrix}
+\end{equation*}
+such that $w_{i,j}^{(l)} = \vec{W}_{i,j}^{(l)}$.
+
+Forward propagation in matrix notation starts with
+$\vec{v}^{(0)} = \vec{x}$.
+
+Then, for each hidden layer $l = 1, \dotsc, L - 1$,
+calculate
+\begin{align*}
+\vec{z}^{(l)} &= \vec{W}^{(l)} \vec{v}^{(l-1)} \\
+\vec{v}^{(l)} &= \varphi(\vec{z}^{(l)})
+\end{align*}
+where $\varphi$ is applied element-wise.
+
+Then, calculate the output layer as
+\begin{equation*}
+\vec{f} = \vec{W}^{(L)} \vec{v}^{(L-1)}
+\end{equation*}
+
+For regression, $\hat{\vec{y}} = \vec{f}$ is picked.
+For binary classification, $\hat{y} = sign(f)$ is used,
+for multi-class $\hat{y} = \arg\max_i{f_i}$.
+
+
+\subsection{Backpropagation}
+In order to apply stochastic gradient descent,
+$\nabla_{\vec{W}} \ell(\vec{W}; \vec{y}, \vec{x})$
+or
+\begin{equation*}
+\frac{\partial}{\partial w_{i,j}}
+\ell(\vec{W}; \vec{y}, \vec{x})
+\end{equation*}
+respectively needs to be calculated.
+
+\subsubsection{Scalar Form}
+\begin{enumerate}
+	\item For each unit $j$ on the output layer
+	\begin{enumerate}
+		\item Compute the error signal
+		\begin{equation*}
+		\delta_j^{(L)} = \ell'_j(f_j)
+		\end{equation*}
+		\item For each unit $i$ on layer $L - 1$,
+		calculate the derivative
+		\begin{equation*}
+		\frac{\partial}{\partial w_{j,i}^{(L)}} = \delta_j^{(L)} v_i^{(L - 1)}
+		\end{equation*}
+	\end{enumerate}
+	
+	\item For each hidden layer $l = L - 1, \dotsc, 1$,
+	for each unit $j$ on that layer
+	\begin{enumerate}
+		\item Compute the error signal
+		\begin{equation*}
+		\delta_j^{(l)} = \varphi'(z_j^{(l)}) \cdot
+		\sum_{i \in Layer_{l+1}}{w_{i,j}^{(l)} \delta_i^{(l+1)}}
+		\end{equation*}
+		\item For each unit $i$ on layer $l - 1$,
+		compute the derivative
+		\begin{equation*}
+		\frac{\partial}{\partial w_{j,i}^{(l)}} = \delta_j^{(l)} v_i^{(l-1)}
+		\end{equation*}
+	\end{enumerate}
+\end{enumerate}
+
+\subsubsection{Matrix Form}
+\begin{enumerate}
+	\item For the output layer
+	\begin{enumerate}
+		\item Compute the error
+		\begin{equation*}
+		\vec{\delta}^{(L)}
+		= \vec{\ell}'(\vec{f})
+		= [\ell'(f_1), \dotsc, \ell'(f_p)]
+		\end{equation*}
+		\item Calculate the gradient
+		\begin{equation*}
+		\nabla_{\vec{W}^{(L)}} \ell(\vec{W}; \vec{y}, \vec{x})
+		= \vec{\delta}^{(L)} \vec{v}^{(L-1)^T}
+		\in \R^{p \times m}
+		\end{equation*}
+	\end{enumerate}
+	
+	\item For each hidden layer $l = L - 1, \dotsc, 1$
+	\begin{enumerate}
+		\item Compute the error
+		\begin{equation*}
+		\vec{\delta}^{(l)}
+		= \varphi'(\vec{z}^{(l)}) \underbrace{\odot}_{\text{pointwise multiplication}} 
+		(\vec{W}^{(l + 1)^T} \vec{\delta}^{(l + 1)})
+		\end{equation*}
+		\item Compute the gradient
+		\begin{equation*}
+		\nabla_{\vec{W}^{(l)}} \ell(\vec{W}; \vec{y}, \vec{x})
+		= \vec{\delta}^{(l)} \vec{v}^{(l-1)^T}
+		\in \R^{m' \times m''}
+		\end{equation*}
+	\end{enumerate}
+\end{enumerate}
+
+
+\subsection{Training}
+Given a data set $D$ we want to optimise the weights
+$\vec{W} = (\vec{W}^{(1)}, \dotsc, \vec{W}^{(L)})$.
+
+For a given loss function $\ell(\vec{W}; \vec{x}, \vec{y})$,
+we want to do empirical risk minimisation,
+i.e. jointly optimise over all weights:
+\begin{equation*}
+\vec{W}^*
+= \arg\min_{\vec{W}}{
+	\underbrace{
+		\sum_{i=1}^n{\ell(\vec{W}; \vec{y}_i, \vec{x}_i)}
+	}_{\hat{R}(\vec{W})}
+}
+\end{equation*}
+
+In a multi-output scenario, usually the sum of per-output
+losses is taken:
+\begin{equation*}
+\ell(\vec{W}; \vec{y}, \vec{x}) =
+\sum_{i=1}^p{\ell_i(\vec{W}; y_i, \vec{x})}
+\end{equation*}
+e.g. the sum of squared errors for regression.
+
+Joint optimisation over all weights for all layers is
+generally a non-convex optimisation problem.
+However, a local optimum can still be found.
+
+
+\subsection{Weight Initialisation}
+The optimisation problem is non-convex,
+thus weight initialisation matters.
+
+If all weights are initialised to $0$,
+there will be no gradient.
+If the weights are initialised too small,
+the gradient can become arbitrarily small.
+Conversely, if the initial weights are too large,
+the gradients may explode.
+
+In practice, random initialisation with carefully chosen
+randomness is done.
+
+\begin{theorem}
+	Let $X, Y$ be independent random variables with
+	$\Exp[X] = 0$. Then
+	\begin{equation*}
+	Var[X Y] =
+	\begin{cases}
+	Var[X] \cdot Var[Y] & \text{if $\Exp[Y] = 0$} \\
+	Var[X] \cdot \Exp[Y^2] & \text{if $\Exp[Y] \neq 0$}
+	\end{cases}
+	\end{equation*}
+	
+	If $\varphi$ is the ReLU function and $Y$ is symmetric, then
+	\begin{equation*}
+	\Exp[\varphi(Y)^2] = \frac{1}{2} Var[Y]
+	\end{equation*}
+\end{theorem}
+
+TODO: Propagation of Variance, Slide 9 Week 13
+
+The goal of weight initialisation is to keep the variance
+approximately constant to avoid vanishing and exploding gradients.
+
+\subsubsection{Glorot Initialiser (tanh)}
+Either use
+\begin{equation*}
+w_{i,j} \sim \mathcal{N}\left(0, \frac{1}{n_{in}}\right)
+\end{equation*}
+or
+\begin{equation*}
+w_{i,j} \sim \mathcal{N}\left(0, \frac{2}{n_{in} + n_{out}}\right)
+\end{equation*}
+
+\subsubsection{He Initialiser (ReLU)}
+\begin{equation*}
+w_{i,j} \sim \mathcal{N}\left(0, \frac{2}{n_{in}}\right)
+\end{equation*}
+
+
+\subsection{Learning Rates and Momentum}
+There are many different ways to choose a learning rate.
+
+\emph{Learning rate decay} starts with a small
+learning rate $\alpha$ and decreases it over time,
+e.g.
+\begin{equation*}
+\eta_t = \min(\alpha_{min}, \alpha / t)
+\end{equation*}
+
+\emph{Learning rate schedules} use a piecewise constant
+learning rate, i.e. decrease it after some number of epochs.
+
+\emph{Momentum} can help escaping local minima and
+can prevent oscillation.
+The key idea is to not only move in direction of the gradient,
+but also of the last weight update.
+For a momentum parameter $m < 1$ and a stored weight update
+$\vec{a}$, the new update is
+\begin{align*}
+\vec{a} &\gets m \cdot \vec{a} + \eta_t \nabla_{\vec{W}} \ell(\vec{W}; \vec{y}, \vec{x}) \\
+\vec{W} &\gets \vec{W} - \vec{a}
+\end{align*}
+
+
+\subsection{Regularisation}
+Neural networks have a large number of parameters and are thus
+very prone to overfitting.
+The fact that (mini batch) SGD is used already provides some
+form of regularisation but there are further countermeasures.
+
+\subsubsection{Weight Penalties}
+A penalty term can be added to the loss to keep weights small:
+\begin{equation*}
+\hat{\vec{W}} = \arg\min_{\vec{W}}{
+	\sum_{i=1}^n{\ell(\vec{W}; \vec{y}_i, \vec{x}_i)}
+	+ \lambda \norm{\vec{W}}_2^F
+}
+\end{equation*}
+
+\subsubsection{Early Stopping}
+In general, training should not be ran until the weights converge.
+
+One possibility is to monitor the prediction performance
+on a test set and stopping as soon as the validation
+error starts to increase.
+
+\subsubsection{Dropout}
+The key idea is to randomly ignore (drop out) hidden units
+during training.
+This can encourage sparse activations.
+
+A parameter $p$ specifies a probability with which a unit
+is kept.
+During each training iteration, each unit is set to $0$
+with probability $(1 - p)$.
+After training, the weights are downscaled to
+$p \cdot \vec{w}$ to ensure the expected
+value of the activations during training matches
+the expectation of activations during prediction.
+
+
+\subsection{Batch Normalisation}
+Training is usually stabilised by ensuring that
+training inputs ($\vec{x}$) are standardised.
+However, in deep learning, inputs are shifted and scaled
+through each layer.
+Batch normalisation normalises inputs again after each layer
+according to mini-batch statistics.
+
+It reduces the internal covariate shift (not proven),
+enables larger learning rates and has some regularising effects.
+
+Batch normalisation can be plugged into an existing model as
+\begin{equation*}
+\varphi(\vec{W} \vec{x}) \longrightarrow
+\varphi(\vec{W} BN_{\gamma, \beta}(\vec{x}))
+\end{equation*}
+
+A batch normalisation layer
+$\vec{y}_i = BN_{\gamma, \beta}(\vec{x}_i)$
+over a mini batch
+$\mathcal{B}$ with learned parameters $\gamma, \beta$
+works as follows:
+\begin{enumerate}
+	\item $\mu_\mathcal{B} \gets \frac{1}{m} \sum_{i=1}^m{\vec{x}_i}$
+	\item $\sigma_\mathcal{B}^2 \gets \frac{1}{m} \sum_{i=1}^m{(\vec{x}_i - \mu_\mathcal{B})^2}$
+	\item $\hat{\vec{x}}_i \gets \frac{\vec{x}_i - \mu_\mathcal{B}}{\sqrt{\sigma_\mathcal{B}^2 + \epsilon}}$
+	\item $\vec{y}_i \gets \gamma \hat{\vec{x}}_i + \beta$
+\end{enumerate}
+Parameters $\gamma$ and $\beta$ allow to compensate
+for the scaling effect.
+They in principle allow to undo the normalisation.
+Those two parameters are also learned.
+They allow to explore the spectrum between normalised
+and unnormalised data.
+
+
+\subsection{Losses}
+For binary classification, we can use the
+\emph{logistic loss} function to predict
+probabilities:
+\begin{equation*}
+\ell_\text{logistic}(\vec{w}; \vec{x}, y) =
+\log{(1 + \exp{(- y \vec{w}^T \vec{x})})}
+\end{equation*}
+
+TODO: Binary cross-entropy loss.
+
+TODO: Softmax
+
+TODO: Cross-entropy loss.
+
+
+\subsection{Convolutional Neural Networks}
+Predictions should be unchanged under some data transformations,
+i.e. remain invariant.
+This could be achieved by data augmentation,
+specialised regularisation terms,
+invariance built into preprocessing,
+or by building it into the network structure.
+Convolutional neural networks are an example of the last one.
+
+The general idea is that hidden layers share parameters,
+i.e. each hidden unit only depends on a close region of inputs
+around it,
+and weights are identical across all units on the layer.
+This reduces the number of parameters
+and encourages robustness against small translations.
+
+The following is common terminology:
+\begin{description}
+	\item[Filters/kernels] are the values used for convolution
+	and correspond to the weights.
+	\item[Stride] is the step size between
+	two filter applications.
+	\item[Padding] is a border around the input image to control the output dimension.
+\end{description}
+
+The results for a single pixel is the inner product
+of the filter and the corresponding
+image patch, centred on that pixel.
+There are multiple filters per layer, applied in parallel
+and in full input depth
+(e.g. for images, filters are usually 3D).
+
+Usually, zero-padding is used, i.e. padding the image with $0$s.
+
+If $m$ different $f \times f$ filters are applied
+to an $n \times n$ image
+with padding $p$ and stride $s$,
+the output dimensions are
+\begin{equation*}
+\frac{n + 2p - f}{s} + 1
+\end{equation*}
+
+Pooling takes a region of a layer output
+and aggregates it to a single value,
+e.g. the maximum or average.
+This makes sense in many scenarios as it condenses
+global information and reduces the number of parameters.
+
+(Early) CNN architectures generally follow the pattern:
+First, convolutions followed by pooling layers are computed.
+As the input reaches a certain size,
+the activations are flattened into a vector.
+Then, some fully connected layers are applied until the
+output is calculated.
+
+
+\subsection{Connection to Kernels}
+
+An ANN with a single hidden layer using the tanh activation
+learns functions of the form
+\begin{equation*}
+f(\vec{x}) = \sum_{i=1}{w_i \cdot tanh(\vec{\theta}_i^T \vec{x})}
+\end{equation*}
+
+This is exactly the same type of functions learned by using the
+\emph{tanh kernel}:
+\begin{equation*}
+f(\vec{x}) = \sum_{i=1}{\alpha_i \cdot tanh(
+	\vec{x}_i^T \vec{x}
+	)}
+\end{equation*}
+
+The advantage of ANNs is that they are flexible nonlinear
+models which may discover representations at multiple
+levels of abstractions.
+However, they suffer from noisy data and have many
+architectural challenges.
+Kernel methods are convex and robust against noise,
+but the model grows with data and does not allow
+for multiple layers.
